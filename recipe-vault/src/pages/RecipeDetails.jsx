@@ -37,7 +37,14 @@ export default function RecipeDetails() {
       
       <div className="instructions-section">
         <h2>Инструкции</h2>
-        <p>{recipe.instructions}</p>
+        <div className="instructions-text">
+          {recipe.instructions.split('. ').map((sentence, index) => (
+            <p key={index}>
+              {index + 1}. {sentence.trim()}
+              {!sentence.endsWith('.') && '.'}
+            </p>
+          ))}
+        </div>
       </div>
       
       {recipe.nutrition && <NutritionFacts nutrition={recipe.nutrition} />}

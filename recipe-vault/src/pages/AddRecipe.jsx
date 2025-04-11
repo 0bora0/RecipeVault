@@ -21,7 +21,10 @@ export default function AddRecipe() {
                 title: formData.title,
                 category: formData.category,
                 ingredients: formData.ingredients.split('\n').filter(i => i.trim()),
-                instructions: formData.instructions,
+                instructions: formData.instructions
+                  .replace(/<[^>]*>?/gm, '') // Премахва HTML тагове
+                  .replace(/\n/g, '\n') // Запазва новите редове
+                  .trim(),
                 image: formData.image
               }));
               navigate('/');

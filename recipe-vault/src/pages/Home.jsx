@@ -1,15 +1,16 @@
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { loadRecipes, setSearchQuery, setCategoryFilter } from '../features/recipes/recipeSlice';
+import { loadRecipes } from '../features/recipes/recipeSlice';
 import RecipeCard from '../components/RecipeCard';
 import SearchAndFilter from '../components/SearchAndFilter';
+import Loader from '../components/Loader';
 
 export default function Home() {
   const dispatch = useDispatch();
-  const { 
-    recipes, 
-    favorites, 
-    loading, 
+  const {
+    recipes,
+    favorites,
+    loading,
     error,
     searchQuery,
     selectedCategory
@@ -19,18 +20,19 @@ export default function Home() {
     dispatch(loadRecipes({ query: searchQuery, category: selectedCategory }));
   }, [dispatch, searchQuery, selectedCategory]);
 
-  if (loading) return <div className="loading">Зареждане на рецепти...</div>;
-  if (error) return <div className="error">Грешка: {error.message}</div>;
-
   return (
-    <div className="home-page">
+    <div className="home-page" style={{ position: 'relative' }}>
+      {loading && <Loader />}
+
       <h1>RecipeVault</h1>
       <SearchAndFilter />
-      
+
+      {error && <div className="error">Грешка: {error.message}</div>}
+
       <div className="recipes-grid">
         {recipes.map(recipe => (
-          <RecipeCard 
-            key={recipe.id} 
+          <RecipeCard
+            key={recipe.id}
             recipe={recipe}
             isFavorite={favorites.some(fav => fav.id === recipe.id)}
           />

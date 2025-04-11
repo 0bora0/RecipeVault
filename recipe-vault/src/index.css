@@ -222,3 +222,13 @@ select {
   border: 1px solid #ddd;
   background: white;
 }
+
+/* В CSS файла */
+.instructions-text {
+  white-space: pre-line;
+  line-height: 1.6;
+}
+
+.instructions-text p {
+  margin-bottom: 10px;
+}

@@ -36,15 +36,23 @@ export const fetchRecipeDetails = async (id) => {
         includeNutrition: true
       }
     });
+    
+    // Функция за чистене на HTML тагове
+    const cleanInstructions = (html) => {
+      return html.replace(/<[^>]*>?/gm, '')
+                .replace(/\n/g, ' ')
+                .trim();
+    };
+
     return {
       id: response.data.id,
       title: response.data.title,
       image: response.data.image,
       ingredients: response.data.extendedIngredients.map(ing => ing.original),
-      instructions: response.data.instructions || 'Няма налични инструкции',
-      nutrition: response.data.nutrition,
-      readyInMinutes: response.data.readyInMinutes,
-      servings: response.data.servings
+      instructions: response.data.instructions 
+        ? cleanInstructions(response.data.instructions)
+        : 'Няма налични инструкции',
+      nutrition: response.data.nutrition
     };
   } catch (error) {
     console.error('Error fetching recipe details:', error);
