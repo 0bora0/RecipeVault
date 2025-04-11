@@ -1,8 +1,8 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { fetchRecipes } from '../../api/spoonacular';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { fetchRecipes } from "../../api/spoonacular";
 
 export const loadRecipes = createAsyncThunk(
-  'recipes/loadRecipes',
+  "recipes/loadRecipes",
   async (searchParams, { rejectWithValue }) => {
     try {
       return await fetchRecipes(searchParams.query, searchParams.category);
@@ -17,12 +17,12 @@ const initialState = {
   favorites: [],
   loading: false,
   error: null,
-  searchQuery: '',
-  selectedCategory: ''
+  searchQuery: "",
+  selectedCategory: "",
 };
 
 const recipeSlice = createSlice({
-  name: 'recipes',
+  name: "recipes",
   initialState,
   reducers: {
     setSearchQuery: (state, action) => {
@@ -32,18 +32,41 @@ const recipeSlice = createSlice({
       state.selectedCategory = action.payload;
     },
     addFavorite: (state, action) => {
-      state.favorites.push(action.payload);
+      const recipeId = action.payload.id;
+      const alreadyExists = state.favorites.some(
+        (recipe) => recipe.id === recipeId
+      );
+      if (!alreadyExists) {
+        state.favorites.push(action.payload);
+      }
     },
     removeFavorite: (state, action) => {
-      state.favorites = state.favorites.filter(recipe => recipe.id !== action.payload);
+      state.favorites = state.favorites.filter(
+        (recipe) => recipe.id !== action.payload
+      );
     },
+    toggleFavorite: (state, action) => {
+              const recipeId = action.payload.id;
+              const index = state.favorites.findIndex(recipe => recipe.id === recipeId);
+              
+              if (index >= 0) {
+                // Ако рецептата вече е в любими, премахваме я
+                state.favorites.splice(index, 1);
+              } else {
+                // Ако не е в любими, добавяме я
+                state.favorites.push(action.payload);
+              }
+            },
+          
+        
+
     addRecipe: (state, action) => {
       state.recipes.unshift({
         ...action.payload,
         id: Date.now(),
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
       });
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -59,15 +82,16 @@ const recipeSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       });
-  }
+  },
 });
 
-export const { 
-  setSearchQuery, 
+export const {
+  setSearchQuery,
   setCategoryFilter,
   addFavorite,
   removeFavorite,
-  addRecipe 
+  addRecipe,
+  toggleFavorite
 } = recipeSlice.actions;
 
 export default recipeSlice.reducer;

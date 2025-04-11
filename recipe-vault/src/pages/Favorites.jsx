@@ -1,18 +1,30 @@
-import { useSelector } from "react-redux";
-import RecipeCard from "../components/RecipeCard";
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { removeFavorite } from '../features/recipes/recipeSlice';
+import RecipeCard from '../components/RecipeCard';
 
 export default function Favorites() {
-  const favorites = useSelector((state) => state.recipes.favorites);
+  const favorites = useSelector(state => state.recipes.favorites);
+  const dispatch = useDispatch();
 
   return (
-    <div>
+    <div className="favorites-page">
       <h1>Любими рецепти</h1>
+      
       {favorites.length === 0 ? (
-        <p>Нямате любими рецепти.</p>
+        <p>Нямате любими рецепти</p>
       ) : (
-        <div className="recipes-grid">
-          {favorites.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} />
+        <div className="favorites-grid">
+          {favorites.map(recipe => (
+            <div key={recipe.id} className="favorite-item">
+              <RecipeCard recipe={recipe} />
+              <button 
+                onClick={() => dispatch(removeFavorite(recipe.id))}
+                className="remove-favorite-btn"
+              >
+                Премахни от любими
+              </button>
+            </div>
           ))}
         </div>
       )}

@@ -1,9 +1,12 @@
-import { useDispatch } from 'react-redux';
-import { addFavorite, removeFavorite } from '../features/recipes/recipeSlice';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { addFavorite, removeFavorite } from '../features/recipes/recipeSlice';
 
-export default function RecipeCard({ recipe, isFavorite }) {
+export default function RecipeCard({ recipe }) {
   const dispatch = useDispatch();
+  const favorites = useSelector(state => state.recipes.favorites);
+  const isFavorite = favorites.some(fav => fav.id === recipe.id);
 
   const handleFavorite = () => {
     if (isFavorite) {
@@ -18,19 +21,17 @@ export default function RecipeCard({ recipe, isFavorite }) {
       <button 
         onClick={handleFavorite}
         className={`favorite-btn ${isFavorite ? 'active' : ''}`}
-        aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
       >
         {isFavorite ? '★' : '☆'}
       </button>
       
       <Link to={`/recipe/${recipe.id}`}>
+        <h3>{recipe.title}</h3>
         <img 
           src={recipe.image || '/placeholder-food.jpg'} 
           alt={recipe.title}
           loading="lazy"
         />
-        <h3>{recipe.title}</h3>
-        <p className="category">{recipe.category}</p>
       </Link>
     </div>
   );
