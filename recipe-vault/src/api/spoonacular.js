@@ -1,61 +1,88 @@
 import axios from "axios";
-const BASE_URL = "https://www.themealdb.com/api/json/v1/1";
+const API_KEY = "091da16b176443aa83262900242d3450";
+const BASE_URL = "https://api.spoonacular.com/recipes";
 
-export const fetchRecipes = async (query = "") => {
+export const fetchRecipes = async (
+  query = "",
+  cuisine = "",
+  diet = "",
+  intolerances = "",
+  number = 10
+) => {
   try {
-    const response = await axios.get(`${BASE_URL}/search.php`, {
-      params: { s: query },
+    const response = await axios.get(`${BASE_URL}/complexSearch`, {
+      params: {
+        apiKey: API_KEY,
+        query,
+        cuisine,
+        diet,
+        intolerances,
+        number,
+        addRecipeInformation: true,
+        instructionsRequired: true,
+      },
     });
 
-    const meals = response.data.meals;
-    if (!meals) return [];
-
-    return meals.map((meal) => ({
-      id: meal.idMeal,
-      title: meal.strMeal,
-      image: meal.strMealThumb,
-      ingredients: getIngredientsList(meal),
-      instructions: meal.strInstructions || "Няма налични инструкции",
-      category: meal.strCategory || "Other",
+    return response.data.results.map((recipe) => ({
+      id: recipe.id,
+      title: recipe.title,
+      image: recipe.image,
+      ingredients: recipe.extendedIngredients?.map((ing) => ing.original) || [],
+      instructions: recipe.instructions || "Няма налични инструкции",
+      category: recipe.dishTypes?.[0] || "Other",
+      servings: recipe.servings,
+      prepTime: recipe.readyInMinutes || "Не е посочено време за приготвяне",
     }));
   } catch (error) {
-    console.error("Error fetching recipes from TheMealDB:", error);
+    console.error("Error fetching recipes:", error);
     return [];
   }
 };
+
 export const fetchRecipeDetails = async (id) => {
   try {
-    const response = await axios.get(`${BASE_URL}/lookup.php`, {
-      params: { i: id },
+    const response = await axios.get(`${BASE_URL}/${id}/information`, {
+      params: {
+        apiKey: API_KEY,
+        includeNutrition: true,
+      },
     });
 
-    const meal = response.data.meals?.[0];
-    if (!meal) return null;
+    const cleanInstructions = (html) => {
+      return html
+        .replace(/<[^>]*>?/gm, " ")
+        .replace(/\n/g, " ")
+        .trim();
+    };
+
+    if (!response.data) {
+      throw new Error("Не бяха открити подробности за рецептата.");
+    }
 
     return {
-      id: meal.idMeal,
-      title: meal.strMeal,
-      image: meal.strMealThumb,
-      ingredients: getIngredientsList(meal),
-      instructions: meal.strInstructions || "Няма налични инструкции",
-      category: meal.strCategory || "Other",
-      area: meal.strArea || "",
-      youtube: meal.strYoutube || "",
+      id: response.data.id,
+      title: response.data.title,
+      image: response.data.image,
+      ingredients: response.data.extendedIngredients.map(
+        (ing) => ing.original
+      ) || ["Няма съставки посочени"],
+      instructions: response.data.instructions
+        ? cleanInstructions(response.data.instructions)
+        : "Няма налични инструкции",
+      nutrition:
+        response.data.nutrition ||
+        "Няма налична информация за хранителната стойност",
+      servings: response.data.servings || "Не е посочено колко порции",
+      prepTime:
+        response.data.readyInMinutes || "Не е посочено време за приготвяне",
     };
   } catch (error) {
-    console.error("Error fetching recipe details from TheMealDB:", error);
-    return null;
+    console.error("Error fetching recipe details:", error);
+    return {
+      error: true,
+      message: error.response
+        ? error.response.data
+        : "Неуспешно извличане на данни.",
+    };
   }
-};
-
-const getIngredientsList = (meal) => {
-  const ingredients = [];
-  for (let i = 1; i <= 20; i++) {
-    const ingredient = meal[`strIngredient${i}`];
-    const measure = meal[`strMeasure${i}`];
-    if (ingredient && ingredient.trim()) {
-      ingredients.push(`${measure} ${ingredient}`.trim());
-    }
-  }
-  return ingredients;
 };
