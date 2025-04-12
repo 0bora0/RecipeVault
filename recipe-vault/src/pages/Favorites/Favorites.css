@@ -1,0 +1,13 @@
+.favorites-page {
+  background: linear-gradient(to bottom, #fff1f2, #fff);
+}
+
+.remove-favorite-btn {
+  box-shadow: 0 4px 15px rgba(225, 29, 72, 0.2);
+  transition: all 0.3s ease;
+}
+
+.remove-favorite-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(225, 29, 72, 0.3);
+}
