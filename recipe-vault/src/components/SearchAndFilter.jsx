@@ -30,7 +30,7 @@ export default function SearchAndFilter() {
           onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
         />
         <button onClick={handleSearch}>
-          <i className="search-icon">🔍</i>
+          <i className="fa fa-search"></i>
         </button>
       </div>
       
