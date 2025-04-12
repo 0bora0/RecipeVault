@@ -179,7 +179,7 @@ function AddRecipe() {
               className="file-input"
             />
             <label htmlFor="image" className="file-input-label">
-              <i className="bi bi-image"></i> Избери снимка...
+              <i className="bi bi-image"></i>Прикачване на снимка на ястието
             </label>
             <small className="form-hint">Макс. размер: 2MB (JPEG/PNG)</small>
           </div>
