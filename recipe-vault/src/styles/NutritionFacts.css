@@ -1,0 +1,56 @@
+.nutrition-facts {
+  background: linear-gradient(135deg, #ffffff, #f8f9fa);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid #dee2e6;
+  max-width: 800px;
+  margin: 40px auto;
+}
+
+.nutrition-facts h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #343a40;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nutrients-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+.nutrient-item {
+  background-color: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.nutrient-item:hover {
+  background-color: #f8f9fa;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+}
+
+.nutrient-name {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6c757d;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.nutrient-amount {
+  font-size: 20px;
+  font-weight: 700;
+  color: #212529;
+}
