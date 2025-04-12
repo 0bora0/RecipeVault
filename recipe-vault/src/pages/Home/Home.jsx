@@ -1,9 +1,11 @@
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { loadRecipes } from '../features/recipes/recipeSlice';
-import RecipeCard from '../components/RecipeCard';
-import SearchAndFilter from '../components/SearchAndFilter';
-import Loader from '../components/Loader';
+import { loadRecipes } from '../../features/recipes/recipeSlice';
+import RecipeCard from '../../components/RecipeCard';
+import SearchAndFilter from '../../components/SearchAndFilter'; 
+import Loader from '../../components/Loader'; 
+import { Link } from 'react-router-dom';
+
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -24,7 +26,13 @@ export default function Home() {
     <div className="home-page" style={{ position: 'relative' }}>
       {loading && <Loader />}
 
-      <h1>RecipeVault</h1>
+      <div className="top-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1>RecipeVault</h1>
+        <Link to="/add-recipe" className="add-recipe-btn">
+          <i className="bi bi-plus-circle"></i> Добави рецепта
+        </Link>
+      </div>
+
       <SearchAndFilter />
 
       {error && <div className="error">Грешка: {error.message}</div>}

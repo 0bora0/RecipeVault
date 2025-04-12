@@ -1,4 +1,3 @@
-// components/NutritionFacts.jsx
 export default function NutritionFacts({ nutrition }) {
               const nutrients = nutrition.nutrients.filter(n => 
                 ['Calories', 'Protein', 'Fat', 'Carbohydrates'].includes(n.name)

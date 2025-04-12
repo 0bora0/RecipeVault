@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeFavorite } from '../features/recipes/recipeSlice';
-import RecipeCard from '../components/RecipeCard';
+import { removeFavorite } from '../../features/recipes/recipeSlice';
+import RecipeCard from '../../components/RecipeCard';
 
 export default function Favorites() {
   const favorites = useSelector(state => state.recipes.favorites);

@@ -1,66 +1,61 @@
-import axios from 'axios';
+import axios from "axios";
+const BASE_URL = "https://www.themealdb.com/api/json/v1/1";
 
-const API_KEY = 'eb2f566fd76949eba400f59765b373bc'; // Регистрирайте се на spoonacular.com за безплатен ключ
-const BASE_URL = 'https://api.spoonacular.com/recipes';
-
-export const fetchRecipes = async (query = '', cuisine = '') => {
+export const fetchRecipes = async (query = "") => {
   try {
-    const response = await axios.get(`${BASE_URL}/complexSearch`, {
-      params: {
-        apiKey: API_KEY,
-        query,
-        cuisine,
-        number: 10,
-        addRecipeInformation: true
-      }
+    const response = await axios.get(`${BASE_URL}/search.php`, {
+      params: { s: query },
     });
-    return response.data.results;
+
+    const meals = response.data.meals;
+    if (!meals) return [];
+
+    return meals.map((meal) => ({
+      id: meal.idMeal,
+      title: meal.strMeal,
+      image: meal.strMealThumb,
+      ingredients: getIngredientsList(meal),
+      instructions: meal.strInstructions || "Няма налични инструкции",
+      category: meal.strCategory || "Other",
+    }));
   } catch (error) {
-    console.error('API Error, using mock data:', error);
-    // Mock data fallback
-    return [
-      {
-        id: 1,
-        title: "Шоколадово кейк",
-        image: "https://spoonacular.com/recipeImages/1-312x231.jpg",
-        dishTypes: ["dessert"],
-        extendedIngredients: [
-          { original: "1 cup flour" },
-          { original: "1/2 cup sugar" }
-        ]
-      },
-      // Add more mock recipes as needed
-    ];
+    console.error("Error fetching recipes from TheMealDB:", error);
+    return [];
   }
 };
 export const fetchRecipeDetails = async (id) => {
   try {
-    const response = await axios.get(`${BASE_URL}/${id}/information`, {
-      params: {
-        apiKey: API_KEY,
-        includeNutrition: true
-      }
+    const response = await axios.get(`${BASE_URL}/lookup.php`, {
+      params: { i: id },
     });
-    
-    // Функция за чистене на HTML тагове
-    const cleanInstructions = (html) => {
-      return html.replace(/<[^>]*>?/gm, '')
-                .replace(/\n/g, ' ')
-                .trim();
-    };
+
+    const meal = response.data.meals?.[0];
+    if (!meal) return null;
 
     return {
-      id: response.data.id,
-      title: response.data.title,
-      image: response.data.image,
-      ingredients: response.data.extendedIngredients.map(ing => ing.original),
-      instructions: response.data.instructions 
-        ? cleanInstructions(response.data.instructions)
-        : 'Няма налични инструкции',
-      nutrition: response.data.nutrition
+      id: meal.idMeal,
+      title: meal.strMeal,
+      image: meal.strMealThumb,
+      ingredients: getIngredientsList(meal),
+      instructions: meal.strInstructions || "Няма налични инструкции",
+      category: meal.strCategory || "Other",
+      area: meal.strArea || "",
+      youtube: meal.strYoutube || "",
     };
   } catch (error) {
-    console.error('Error fetching recipe details:', error);
+    console.error("Error fetching recipe details from TheMealDB:", error);
     return null;
   }
+};
+
+const getIngredientsList = (meal) => {
+  const ingredients = [];
+  for (let i = 1; i <= 20; i++) {
+    const ingredient = meal[`strIngredient${i}`];
+    const measure = meal[`strMeasure${i}`];
+    if (ingredient && ingredient.trim()) {
+      ingredients.push(`${measure} ${ingredient}`.trim());
+    }
+  }
+  return ingredients;
 };

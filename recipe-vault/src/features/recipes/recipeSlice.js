@@ -50,16 +50,12 @@ const recipeSlice = createSlice({
               const index = state.favorites.findIndex(recipe => recipe.id === recipeId);
               
               if (index >= 0) {
-                // Ако рецептата вече е в любими, премахваме я
                 state.favorites.splice(index, 1);
               } else {
-                // Ако не е в любими, добавяме я
                 state.favorites.push(action.payload);
               }
             },
           
-        
-
     addRecipe: (state, action) => {
       state.recipes.unshift({
         ...action.payload,
