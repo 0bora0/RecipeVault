@@ -17,24 +17,21 @@ export default function Header() {
   }, []);
 
   const navLinks = [
-    { name: 'Начало', path: '/home' },
+    { name: 'Начало', path: '/' },
     { name: 'Рецепти', path: '/recipes' },
     { name: 'Любими', path: '/favorites' },
     { name: 'Мои рецепти', path: '/my-recipes' },
-    { name: 'Добави рецепт', path: '/add-recipe' },
+    { name: 'Добави рецепта', path: '/add-recipe' },
   ];
 
   return (
     <header className={`gourmet-header ${scrolled ? 'scrolled' : ''}`}>
       <div className="container header-container">
-        {/* Logo */}
         <div className="header-logo-wrapper">
           <Link to="/" className="header-logo">
             Gourmet<span>.</span>
           </Link>
         </div>
-
-        {/* Desktop Navigation */}
         <nav className="desktop-nav">
           {navLinks.map((link) => (
             <Link
@@ -46,8 +43,6 @@ export default function Header() {
             </Link>
           ))}
         </nav>
-
-        {/* Icons */}
         <div className="header-icons">
           <button className="header-icon">
             <FaSearch />
@@ -63,14 +58,10 @@ export default function Header() {
             <span className="cart-badge">3</span>
           </button>
         </div>
-
-        {/* Mobile Toggle Button */}
         <div className="menu-toggle" onClick={() => setIsOpen(!isOpen)}>
           {isOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
         </div>
       </div>
-
-      {/* Mobile Menu */}
       <div className={`mobile-menu ${isOpen ? 'open' : ''}`}>
         {navLinks.map((link) => (
           <Link

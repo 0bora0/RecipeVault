@@ -99,8 +99,6 @@ function AddRecipe() {
   };
 
   return (
-    <>
-    <Header/>
     <div className="add-recipe-container">
       <h1>Добави нова рецепта</h1>
       
@@ -228,8 +226,6 @@ function AddRecipe() {
         </div>
       </form>
     </div>
-    <Footer/>
-    </>
   );
 }
 

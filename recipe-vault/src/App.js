@@ -16,7 +16,6 @@ function App() {
   return (
     <Provider store={store}>
       <Router>
-        <Navbar />
         <div className="container">
           <Routes>
             <Route path="/" element={<Home />} />

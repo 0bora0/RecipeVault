@@ -11,23 +11,10 @@ export default function RecipeDetails() {
   const { id } = useParams();
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('ingredients');
 
-  useEffect(() => {
-    const loadRecipe = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchRecipeDetails(id);
-        setRecipe(data);
-      } catch (error) {
-        console.error("Error fetching recipe:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadRecipe();
-  }, [id]);
-
+  // Анимационни варианти
   const fadeIn = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { duration: 0.5 } }
@@ -38,153 +25,258 @@ export default function RecipeDetails() {
     visible: { y: 0, opacity: 1, transition: { duration: 0.5 } }
   };
 
+  useEffect(() => {
+    const loadRecipe = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await fetchRecipeDetails(id);
+        
+        if (!data || data.error) {
+          throw new Error(data?.message || "Неуспешно зареждане на рецепта");
+        }
+
+        const normalizedRecipe = {
+          id: data.id,
+          title: data.title || "Рецепта без име",
+          image: data.image,
+          ingredients: Array.isArray(data.ingredients) ? data.ingredients : ['Няма налични съставки'],
+          instructions: data.instructions || 'Няма налични инструкции',
+          nutrition: data.nutrition || { nutrients: [] },
+          servings: data.servings || "Не е посочено",
+          readyInMinutes: data.readyInMinutes || "Не е посочено",
+          analyzedInstructions: Array.isArray(data.analyzedInstructions) 
+            ? data.analyzedInstructions 
+            : [{ steps: [] }],
+          summary: data.summary || "",
+          cuisines: Array.isArray(data.cuisines) ? data.cuisines : []
+        };
+
+        setRecipe(normalizedRecipe);
+      } catch (err) {
+        console.error("Грешка при зареждане на рецепта:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRecipe();
+  }, [id]);
+
+  const formatInstructions = (text) => {
+    if (!text) return null;
+    
+    if (text.includes('<ol>') || text.includes('<ul>')) {
+      return <div className="instructions-html" dangerouslySetInnerHTML={{ __html: text }} />;
+    }
+    
+    return text.split('\n').map((step, i) => (
+      <p key={i} className="instruction-text">{step}</p>
+    ));
+  };
+
   if (loading) return <Loader />;
-  if (!recipe) return (
+  
+  if (error || !recipe) return (
     <motion.div 
-      className="d-flex flex-column align-items-center justify-content-center min-vh-100 bg-light p-4"
+      className="recipe-error-container"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
-      <FaUtensils className="display-1 text-danger mb-4" />
-      <h1 className="h2 text-danger mb-2">Рецептата не е намерена</h1>
-      <p className="lead text-secondary">Моля, опитайте с друга рецепта</p>
+      <FaClock className="recipe-error-icon" />
+      <h1 className="recipe-error-title">Грешка при зареждане</h1>
+      <p className="recipe-error-message">
+        {error || "Рецептата не е намерена. Моля, опитайте с друга рецепта."}
+      </p>
+      <button 
+        className="retry-button"
+        onClick={() => window.location.reload()}
+      >
+        Опитайте отново
+      </button>
     </motion.div>
   );
 
   return (
     <motion.div 
-      className="min-vh-100 bg-light py-5 px-3"
+      className="recipe-details-container"
       initial="hidden"
       animate="visible"
       variants={fadeIn}
     >
-      <div className="container">
-        <motion.div className="row mb-5" variants={slideUp}>
-          <div className="col-md-6 mb-4 mb-md-0">
-            <motion.img 
+      <div className="recipe-content-wrapper">
+        {/* Хедър секция */}
+        <motion.div 
+          className="recipe-header-grid"
+          variants={slideUp}
+        >
+          <motion.div 
+            className="recipe-image-wrapper"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <img 
               src={recipe.image} 
               alt={recipe.title}
-              className="img-fluid rounded shadow"
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              className="recipe-image"
+              loading="lazy"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = 'https://spoonacular.com/recipeImages/default.jpg';
+              }}
             />
-          </div>
+          </motion.div>
           
-          <div className="col-md-6 d-flex flex-column justify-content-center">
-            <motion.h1 
-              className="display-5 fw-bold text-danger mb-4"
-              variants={slideUp}
-            >
-              {recipe.title}
-            </motion.h1>
+          <div className="recipe-info-wrapper">
+            <div className="recipe-info">
+              <motion.h1 
+                className="recipe-title"
+                variants={slideUp}
+              >
+                {recipe.title}
+              </motion.h1>
+              
+              <div className="recipe-meta-container">
+                <motion.div 
+                  className="recipe-meta-item"
+                  variants={slideUp}
+                  whileHover={{ y: -3, scale: 1.05 }}
+                >
+                  <FaClock className="recipe-meta-icon" />
+                  <span>{recipe.readyInMinutes} минути</span>
+                </motion.div>
+                
+                <motion.div 
+                  className="recipe-meta-item"
+                  variants={slideUp}
+                  whileHover={{ y: -3, scale: 1.05 }}
+                >
+                  <FaUtensils className="recipe-meta-icon" />
+                  <span>{recipe.servings} порции</span>
+                </motion.div>
 
-            <div className="d-flex flex-wrap gap-3 mb-4">
-              {recipe.readyInMinutes && (
+                {recipe.cuisines.length > 0 && (
+                  <motion.div 
+                    className="recipe-meta-item"
+                    variants={slideUp}
+                    whileHover={{ y: -3, scale: 1.05 }}
+                  >
+                    <FaUtensils className="recipe-meta-icon" />
+                    <span>{recipe.cuisines.join(", ")}</span>
+                  </motion.div>
+                )}
+              </div>
+              
+              {recipe.summary && (
                 <motion.div 
-                  className="d-flex align-items-center bg-white px-3 py-2 rounded shadow-sm"
+                  className="recipe-summary"
                   variants={slideUp}
-                  whileHover={{ y: -2 }}
-                >
-                  <FaClock className="text-warning me-2" />
-                  <span className="text-secondary">{recipe.readyInMinutes} минути</span>
-                </motion.div>
-              )}
-              {recipe.servings && (
-                <motion.div 
-                  className="d-flex align-items-center bg-white px-3 py-2 rounded shadow-sm"
-                  variants={slideUp}
-                  whileHover={{ y: -2 }}
-                >
-                  <FaUtensils className="text-warning me-2" />
-                  <span className="text-secondary">{recipe.servings} порции</span>
-                </motion.div>
+                  dangerouslySetInnerHTML={{ __html: recipe.summary }}
+                />
               )}
             </div>
+          </div>
+        </motion.div>
 
-            {recipe.summary && (
-              <motion.div 
-                className="text-muted mb-4"
-                variants={slideUp}
-                dangerouslySetInnerHTML={{ __html: recipe.summary }}
-              />
+        {/* Табове за навигация */}
+        <motion.div 
+          className="recipe-tabs-container"
+          variants={slideUp}
+        >
+          <div className="recipe-tabs">
+            <button
+              className={`recipe-tab ${activeTab === 'ingredients' ? 'active' : ''}`}
+              onClick={() => setActiveTab('ingredients')}
+            >
+              <FaListUl className="recipe-tab-icon" />
+              <span>Съставки</span>
+            </button>
+            
+            <button
+              className={`recipe-tab ${activeTab === 'instructions' ? 'active' : ''}`}
+              onClick={() => setActiveTab('instructions')}
+            >
+              <FaBookOpen className="recipe-tab-icon" />
+              <span>Инструкции</span>
+            </button>
+            
+            {recipe.nutrition && recipe.nutrition.nutrients?.length > 0 && (
+              <button
+                className={`recipe-tab ${activeTab === 'nutrition' ? 'active' : ''}`}
+                onClick={() => setActiveTab('nutrition')}
+              >
+                <FaChartPie className="recipe-tab-icon" />
+                <span>Хранителни стойности</span>
+              </button>
             )}
           </div>
         </motion.div>
 
-        <motion.div className="d-flex border-bottom mb-4" variants={slideUp}>
-          <button
-            className={`btn me-3 ${activeTab === 'ingredients' ? 'btn-danger' : 'btn-outline-secondary'}`}
-            onClick={() => setActiveTab('ingredients')}
-          >
-            <FaListUl className="me-2" /> Съставки
-          </button>
-          <button
-            className={`btn me-3 ${activeTab === 'instructions' ? 'btn-danger' : 'btn-outline-secondary'}`}
-            onClick={() => setActiveTab('instructions')}
-          >
-            <FaBookOpen className="me-2" /> Инструкции
-          </button>
-          {recipe.nutrition && (
-            <button
-              className={`btn ${activeTab === 'nutrition' ? 'btn-danger' : 'btn-outline-secondary'}`}
-              onClick={() => setActiveTab('nutrition')}
-            >
-              <FaChartPie className="me-2" /> Хранителни стойности
-            </button>
-          )}
-        </motion.div>
-
-        <motion.div variants={slideUp}>
+        {/* Съдържание на табовете */}
+        <motion.div 
+          className="tab-content-container"
+          variants={slideUp}
+        >
+          {/* Съставки */}
           {activeTab === 'ingredients' && (
-            <div className="row">
-              {recipe.ingredients.map((ingredient, index) => (
-                <motion.div
-                  key={index}
-                  className="col-md-6 col-lg-4 mb-3"
-                  whileHover={{ y: -3 }}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <div className="card shadow-sm h-100">
-                    <div className="card-body d-flex align-items-center">
-                      <div className="rounded-circle bg-warning me-3" style={{ width: '10px', height: '10px' }}></div>
-                      <span className="text-secondary">{ingredient}</span>
+            <div className="ingredients-section">
+              <h2 className="section-title">Необходими съставки</h2>
+              <div className="ingredients-grid">
+                {recipe.ingredients.map((ingredient, index) => (
+                  <motion.div
+                    key={`ingredient-${index}`}
+                    className="ingredient-card"
+                    whileHover={{ y: -5, scale: 1.02 }}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.03 }}
+                  >
+                    <div className="ingredient-content">
+                      <div className="ingredient-bullet"></div>
+                      <span className="ingredient-text">{ingredient}</span>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
+              </div>
             </div>
           )}
 
+          {/* Инструкции */}
           {activeTab === 'instructions' && (
-            <div className="card p-4 shadow mb-4">
-              {recipe.instructions.split(". ").map((sentence, index) => (
-                <motion.div
-                  key={index}
-                  className="mb-3"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <p className="mb-0 text-secondary">
-                    <strong className="text-danger me-2">{index + 1}.</strong>
-                    {sentence.trim()}
-                    {!sentence.endsWith(".") && "."}
-                  </p>
-                </motion.div>
-              ))}
+            <div className="instructions-section">
+              <h2 className="section-title">Начин на приготвяне</h2>
+              <div className="instructions-container">
+                {recipe.analyzedInstructions[0].steps.length > 0 ? (
+                  recipe.analyzedInstructions[0].steps.map((step, index) => (
+                    <motion.div
+                      key={`step-${index}`}
+                      className="instruction-step"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.03 }}
+                    >
+                      <span className="step-number">{step.number}.</span>
+                      <p className="step-text">{step.step}</p>
+                    </motion.div>
+                  ))
+                ) : recipe.instructions ? (
+                  formatInstructions(recipe.instructions)
+                ) : (
+                  <p className="no-data-message">Инструкциите не са налични</p>
+                )}
+              </div>
             </div>
           )}
 
+          {/* Хранителни стойности */}
           {activeTab === 'nutrition' && recipe.nutrition && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              <NutritionFacts nutrition={recipe.nutrition} />
-            </motion.div>
+            <div className="nutrition-section">
+              <h2 className="section-title">Хранителна стойност</h2>
+              <div className="nutrition-facts-wrapper">
+                <NutritionFacts nutrition={recipe.nutrition} />
+              </div>
+            </div>
           )}
         </motion.div>
       </div>

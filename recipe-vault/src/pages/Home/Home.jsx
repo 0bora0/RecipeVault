@@ -25,12 +25,9 @@ export default function Home() {
 
   return (
     <div className="home-page">
-      {/* Floating Add Recipe Button (mobile only) */}
       <Link to="/add-recipe" className="floating-add-btn">
         <FaPlusCircle />
       </Link>
-
-      {/* Hero Section */}
       <div className="hero-section">
         <div className="hero-content">
           <h1>RecipeVault</h1>
@@ -38,9 +35,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="main-content">
-        {/* Top Bar */}
         <div className="top-bar">
           <div className="search-container">
             <FaSearch className="search-icon" />
@@ -50,8 +45,6 @@ export default function Home() {
             <FaPlusCircle /> Добави рецепта
           </Link>
         </div>
-
-        {/* Loading and Error States */}
         {loading && <Loader />}
 
         {error && (
@@ -60,7 +53,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* Empty State */}
         {!loading && recipes.length === 0 && (
           <div className="empty-state">
             <img src="/images/empty-recipes.svg" alt="Няма рецепти" />
@@ -71,8 +63,6 @@ export default function Home() {
             </Link>
           </div>
         )}
-
-        {/* Recipes Grid */}
         <div className="recipes-grid">
           {recipes.map(recipe => (
             <RecipeCard
