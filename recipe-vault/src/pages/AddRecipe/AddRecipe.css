@@ -1,6 +1,4 @@
-/* AddRecipe.css */
 
-/* Base Styles */
 .add-recipe-container {
   max-width: 800px;
   margin: 2rem auto;
@@ -33,7 +31,6 @@
   border-radius: 2px;
 }
 
-/* Error Message */
 .error-message {
   background: #ffebee;
   color: #d32f2f;
@@ -50,7 +47,6 @@
   font-size: 1.2rem;
 }
 
-/* Form Styles */
 .recipe-form {
   display: flex;
   flex-direction: column;
@@ -100,7 +96,6 @@
   font-style: italic;
 }
 
-/* File Input Styling */
 .file-input-container {
   display: flex;
   flex-direction: column;
@@ -140,7 +135,6 @@
   font-size: 1.2rem;
 }
 
-/* Image Preview */
 .image-preview-container {
   margin-top: 1rem;
 }
@@ -186,7 +180,6 @@
   font-size: 0.9rem;
 }
 
-/* Submit Button */
 .form-actions {
   margin-top: 1rem;
   display: flex;
@@ -223,7 +216,6 @@
   font-size: 1.2rem;
 }
 
-/* Loading Spinner */
 .spinner {
   display: inline-block;
   width: 1rem;
@@ -238,7 +230,6 @@
   to { transform: rotate(360deg); }
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .add-recipe-container {
     padding: 1.5rem;

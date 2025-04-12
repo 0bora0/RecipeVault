@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchRecipeDetails } from "../../api/spoonacular";
 import NutritionFacts from "../../components/NutritionFacts";
-import { FaUtensils, FaListUl, FaBookOpen, FaClock, FaChartPie } from "react-icons/fa";
+import {
+  FaUtensils,
+  FaListUl,
+  FaBookOpen,
+  FaClock,
+  FaChartPie,
+} from "react-icons/fa";
 import { motion } from "framer-motion";
 import Loader from "../../components/Loader";
 import "../RecipeDetails/RecipeDetails.css";
@@ -12,17 +18,15 @@ export default function RecipeDetails() {
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('ingredients');
-
-  // Анимационни варианти
+  const [activeTab, setActiveTab] = useState("ingredients");
   const fadeIn = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.5 } }
+    visible: { opacity: 1, transition: { duration: 0.5 } },
   };
 
   const slideUp = {
     hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.5 } }
+    visible: { y: 0, opacity: 1, transition: { duration: 0.5 } },
   };
 
   useEffect(() => {
@@ -31,7 +35,7 @@ export default function RecipeDetails() {
       setError(null);
       try {
         const data = await fetchRecipeDetails(id);
-        
+
         if (!data || data.error) {
           throw new Error(data?.message || "Неуспешно зареждане на рецепта");
         }
@@ -40,16 +44,18 @@ export default function RecipeDetails() {
           id: data.id,
           title: data.title || "Рецепта без име",
           image: data.image,
-          ingredients: Array.isArray(data.ingredients) ? data.ingredients : ['Няма налични съставки'],
-          instructions: data.instructions || 'Няма налични инструкции',
+          ingredients: Array.isArray(data.ingredients)
+            ? data.ingredients
+            : ["Няма налични съставки"],
+          instructions: data.instructions || "Няма налични инструкции",
           nutrition: data.nutrition || { nutrients: [] },
           servings: data.servings || "Не е посочено",
           readyInMinutes: data.readyInMinutes || "Не е посочено",
-          analyzedInstructions: Array.isArray(data.analyzedInstructions) 
-            ? data.analyzedInstructions 
+          analyzedInstructions: Array.isArray(data.analyzedInstructions)
+            ? data.analyzedInstructions
             : [{ steps: [] }],
           summary: data.summary || "",
-          cuisines: Array.isArray(data.cuisines) ? data.cuisines : []
+          cuisines: Array.isArray(data.cuisines) ? data.cuisines : [],
         };
 
         setRecipe(normalizedRecipe);
@@ -66,40 +72,50 @@ export default function RecipeDetails() {
 
   const formatInstructions = (text) => {
     if (!text) return null;
-    
-    if (text.includes('<ol>') || text.includes('<ul>')) {
-      return <div className="instructions-html" dangerouslySetInnerHTML={{ __html: text }} />;
+
+    if (text.includes("<ol>") || text.includes("<ul>")) {
+      return (
+        <div
+          className="instructions-html"
+          dangerouslySetInnerHTML={{ __html: text }}
+        />
+      );
     }
-    
-    return text.split('\n').map((step, i) => (
-      <p key={i} className="instruction-text">{step}</p>
+
+    return text.split("\n").map((step, i) => (
+      <p key={i} className="instruction-text">
+        {step}
+      </p>
     ));
   };
 
   if (loading) return <Loader />;
-  
-  if (error || !recipe) return (
-    <motion.div 
-      className="recipe-error-container"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-    >
-      <FaClock className="recipe-error-icon" />
-      <h1 className="recipe-error-title">Грешка при зареждане</h1>
-      <p className="recipe-error-message">
-        {error || "Рецептата не е намерена. Моля, опитайте с друга рецепта."}
-      </p>
-      <button 
-        className="retry-button"
-        onClick={() => window.location.reload()}
-      >
-        Опитайте отново
-      </button>
-    </motion.div>
-  );
 
+  if (error || !recipe)
+    return (
+  <>
+      <motion.div
+        className="recipe-error-container"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        <FaClock className="recipe-error-icon" />
+        <h1 className="recipe-error-title">Грешка при зареждане</h1>
+        <p className="recipe-error-message">
+          {error || "Рецептата не е намерена. Моля, опитайте с друга рецепта."}
+        </p>
+        <button
+          className="retry-button"
+          onClick={() => window.location.reload()}
+        >
+          Опитайте отново
+        </button>
+      </motion.div>
+      </>
+    );
   return (
-    <motion.div 
+    <>
+    <motion.div
       className="recipe-details-container"
       initial="hidden"
       animate="visible"
@@ -107,38 +123,33 @@ export default function RecipeDetails() {
     >
       <div className="recipe-content-wrapper">
         {/* Хедър секция */}
-        <motion.div 
-          className="recipe-header-grid"
-          variants={slideUp}
-        >
-          <motion.div 
+        <motion.div className="recipe-header-grid" variants={slideUp}>
+          <motion.div
             className="recipe-image-wrapper"
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
-            <img 
-              src={recipe.image} 
+            <img
+              src={recipe.image}
               alt={recipe.title}
               className="recipe-image"
               loading="lazy"
               onError={(e) => {
                 e.target.onerror = null;
-                e.target.src = 'https://spoonacular.com/recipeImages/default.jpg';
+                e.target.src =
+                  "https://spoonacular.com/recipeImages/default.jpg";
               }}
             />
           </motion.div>
-          
+
           <div className="recipe-info-wrapper">
             <div className="recipe-info">
-              <motion.h1 
-                className="recipe-title"
-                variants={slideUp}
-              >
+              <motion.h1 className="recipe-title" variants={slideUp}>
                 {recipe.title}
               </motion.h1>
-              
+
               <div className="recipe-meta-container">
-                <motion.div 
+                <motion.div
                   className="recipe-meta-item"
                   variants={slideUp}
                   whileHover={{ y: -3, scale: 1.05 }}
@@ -146,8 +157,8 @@ export default function RecipeDetails() {
                   <FaClock className="recipe-meta-icon" />
                   <span>{recipe.readyInMinutes} минути</span>
                 </motion.div>
-                
-                <motion.div 
+
+                <motion.div
                   className="recipe-meta-item"
                   variants={slideUp}
                   whileHover={{ y: -3, scale: 1.05 }}
@@ -157,7 +168,7 @@ export default function RecipeDetails() {
                 </motion.div>
 
                 {recipe.cuisines.length > 0 && (
-                  <motion.div 
+                  <motion.div
                     className="recipe-meta-item"
                     variants={slideUp}
                     whileHover={{ y: -3, scale: 1.05 }}
@@ -167,9 +178,9 @@ export default function RecipeDetails() {
                   </motion.div>
                 )}
               </div>
-              
+
               {recipe.summary && (
-                <motion.div 
+                <motion.div
                   className="recipe-summary"
                   variants={slideUp}
                   dangerouslySetInnerHTML={{ __html: recipe.summary }}
@@ -180,31 +191,34 @@ export default function RecipeDetails() {
         </motion.div>
 
         {/* Табове за навигация */}
-        <motion.div 
-          className="recipe-tabs-container"
-          variants={slideUp}
-        >
+        <motion.div className="recipe-tabs-container" variants={slideUp}>
           <div className="recipe-tabs">
             <button
-              className={`recipe-tab ${activeTab === 'ingredients' ? 'active' : ''}`}
-              onClick={() => setActiveTab('ingredients')}
+              className={`recipe-tab ${
+                activeTab === "ingredients" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("ingredients")}
             >
               <FaListUl className="recipe-tab-icon" />
               <span>Съставки</span>
             </button>
-            
+
             <button
-              className={`recipe-tab ${activeTab === 'instructions' ? 'active' : ''}`}
-              onClick={() => setActiveTab('instructions')}
+              className={`recipe-tab ${
+                activeTab === "instructions" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("instructions")}
             >
               <FaBookOpen className="recipe-tab-icon" />
               <span>Инструкции</span>
             </button>
-            
+
             {recipe.nutrition && recipe.nutrition.nutrients?.length > 0 && (
               <button
-                className={`recipe-tab ${activeTab === 'nutrition' ? 'active' : ''}`}
-                onClick={() => setActiveTab('nutrition')}
+                className={`recipe-tab ${
+                  activeTab === "nutrition" ? "active" : ""
+                }`}
+                onClick={() => setActiveTab("nutrition")}
               >
                 <FaChartPie className="recipe-tab-icon" />
                 <span>Хранителни стойности</span>
@@ -214,12 +228,9 @@ export default function RecipeDetails() {
         </motion.div>
 
         {/* Съдържание на табовете */}
-        <motion.div 
-          className="tab-content-container"
-          variants={slideUp}
-        >
+        <motion.div className="tab-content-container" variants={slideUp}>
           {/* Съставки */}
-          {activeTab === 'ingredients' && (
+          {activeTab === "ingredients" && (
             <div className="ingredients-section">
               <h2 className="section-title">Необходими съставки</h2>
               <div className="ingredients-grid">
@@ -243,7 +254,7 @@ export default function RecipeDetails() {
           )}
 
           {/* Инструкции */}
-          {activeTab === 'instructions' && (
+          {activeTab === "instructions" && (
             <div className="instructions-section">
               <h2 className="section-title">Начин на приготвяне</h2>
               <div className="instructions-container">
@@ -270,16 +281,34 @@ export default function RecipeDetails() {
           )}
 
           {/* Хранителни стойности */}
-          {activeTab === 'nutrition' && recipe.nutrition && (
+          {activeTab === "nutrition" && recipe.nutrition && (
             <div className="nutrition-section">
               <h2 className="section-title">Хранителна стойност</h2>
               <div className="nutrition-facts-wrapper">
-                <NutritionFacts nutrition={recipe.nutrition} />
+                {recipe.nutrition.nutrients.map((nutrient, index) => (
+                  <div
+                    key={`nutrient-${index}`}
+                    className="nutrition-fact-card"
+                  >
+                    <div className="nutrition-fact-content">
+                      <div className="nutrition-bullet"></div>
+                      <div className="nutrition-text">
+                        <span className="nutrition-name">{nutrient.name}</span>
+                        <span className="nutrition-value">
+                          {Math.round(nutrient.amount)}
+                          {nutrient.unit}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
         </motion.div>
       </div>
     </motion.div>
-  );
-}
+    </>
+  )
+};
+
