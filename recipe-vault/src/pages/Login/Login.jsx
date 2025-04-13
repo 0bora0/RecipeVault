@@ -35,13 +35,13 @@ function Login() {
     } catch (err) {
       console.error("Login error:", err);
       if (err.code === "auth/user-not-found") {
-        setError("Потребител с този email не съществува");
+        setError("A user with this email does not exist.");
       } else if (err.code === "auth/wrong-password") {
-        setError("Грешна парола. Моля, опитайте отново.");
+        setError("Wrong password. Please try again.");
       } else if (err.code === "auth/too-many-requests") {
-        setError("Твърде много опити. Моля, опитайте по-късно.");
+        setError("Too many attempts. Please try again later.");
       } else {
-        setError("Грешка при влизане. Моля, опитайте отново.");
+        setError("Error signing in. Please try again.");
       }
     } finally {
       setIsSubmitting(false);
@@ -56,14 +56,14 @@ function Login() {
     <div className="login-page">
       <div className="login-image">
         <div className="login-image-content">
-          <h1>Добре дошли в RecipeApp</h1>
-          <p>Влезте в своя акаунт, за да получите достъп до вашите любими рецепти и кулинарни идеи.</p>
+          <h1>RecipeApp</h1>
+          <p>Log in to your account to access your favorite recipes and culinary ideas.</p>
         </div>
       </div>
       <div className="login-container">
         <div className="login-header">
-          <h2><FaSignInAlt /> Влезте в профила си</h2>
-          <p>Моля, въведете вашите данни за вход</p>
+          <h2>Log in to your account</h2>
+          <p>Please enter your login details.</p>
         </div>
 
         {error && (
@@ -75,7 +75,7 @@ function Login() {
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
             <label htmlFor="email">
-              <FaEnvelope /> Email адрес
+              <FaEnvelope /> Email
             </label>
             <input
               type="email"
@@ -83,7 +83,7 @@ function Login() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Въведете вашия email"
+              placeholder="Your email address"
               required
               autoComplete="username"
             />
@@ -91,7 +91,7 @@ function Login() {
 
           <div className="form-group">
             <label htmlFor="password">
-              <FaLock /> Парола
+              <FaLock /> Password
             </label>
             <div className="password-input-container">
               <input
@@ -100,7 +100,7 @@ function Login() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Въведете вашата парола"
+                placeholder="Your password"
                 required
                 autoComplete="current-password"
               />
@@ -108,13 +108,13 @@ function Login() {
                 type="button"
                 className="toggle-password"
                 onClick={togglePasswordVisibility}
-                aria-label={showPassword ? "Скрий парола" : "Покажи парола"}
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
             <div className="forgot-password">
-              <Link to="/forgot-password">Забравена парола?</Link>
+              <Link to="/forgot-password">Forgot password?</Link>
             </div>
           </div>
 
@@ -127,17 +127,17 @@ function Login() {
               {isSubmitting ? (
                 <>
                   <span className="spinner" aria-hidden="true"></span>
-                  <span>Влизане...</span>
+                  <span>Login in progress...</span>
                 </>
               ) : (
                 <>
-                  <FaSignInAlt /> Вход
+                  <FaSignInAlt /> Log in
                 </>
               )}
             </button>
 
             <div className="divider">
-              <span>или</span>
+              <span>or</span>
             </div>
 
             <button 
@@ -147,12 +147,12 @@ function Login() {
                 console.log("Login with Google");
               }}
             >
-              <FcGoogle /> Вход с Google
+              <FcGoogle /> Login with Google
             </button>
           </div>
 
           <div className="register-link">
-            Нямате акаунт? <Link to="/register">Регистрирайте се</Link>
+            Don't have an account? <Link to="/register">Sign up</Link>
           </div>
         </form>
       </div>
