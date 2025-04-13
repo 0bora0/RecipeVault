@@ -50,7 +50,7 @@ function Register() {
     const file = e.target.files[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) {
-      setError("Снимката трябва да е по-малка от 2MB");
+      setError("The photo must be less than 2MB.");
       return;
     }
 
@@ -60,7 +60,7 @@ function Register() {
       setPreviewImage(reader.result);
     };
     reader.onerror = () => {
-      setError("Грешка при прочитане на файла");
+      setError("Error reading file");
     };
     reader.readAsDataURL(file);
   };
@@ -71,13 +71,13 @@ function Register() {
     setError("");
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Паролите не съвпадат!");
+      setError("The passwords do not match!");
       setIsSubmitting(false);
       return;
     }
 
     if (passwordStrength < 3) {
-      setError("Паролата е твърде слаба. Използвайте поне 8 символа, включително главни букви и цифри.");
+      setError("The password is too weak. Use at least 8 characters, including uppercase letters and numbers.");
       setIsSubmitting(false);
       return;
     }
@@ -101,15 +101,15 @@ function Register() {
       });
       navigate("/dashboard");
     } catch (error) {
-      console.error("Грешка при регистрация:", error.message);
+      console.error("Registration error:", error.message);
       if (error.code === "auth/email-already-in-use") {
-        setError("Този email адрес вече се използва.");
+        setError("This email address is already in use.");
       } else if (error.code === "auth/weak-password") {
-        setError("Паролата е твърде слаба.");
+        setError("The password is too weak. Use at least 8 characters, including uppercase letters and numbers.");
       } else if (error.code === "auth/invalid-email") {
-        setError("Невалиден email адрес.");
+        setError("Invalid email address.");
       } else {
-        setError("Възникна грешка при регистрация. Моля, опитайте отново.");
+        setError("An error occurred while registering. Please try again.");
       }
     } finally {
       setIsSubmitting(false);
@@ -125,8 +125,8 @@ function Register() {
     <div className="register-page">
       <div className="register-container">
         <div className="register-header">
-          <h2><FaSignInAlt /> Създайте своя профил</h2>
-          <p>Присъединете се към нашата общност</p>
+          <h2><FaSignInAlt /> Create your account</h2>
+          <p>Join our community</p>
         </div>
 
         {error && (
@@ -138,7 +138,7 @@ function Register() {
         <form onSubmit={handleSubmit} className="register-form">
           <div className="form-group">
             <label htmlFor="name">
-              <MdDriveFileRenameOutline /> Име*
+              <MdDriveFileRenameOutline /> Name*
             </label>
             <input
               type="text"
@@ -146,14 +146,14 @@ function Register() {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="Въведете вашето име"
+              placeholder="Your name"
               required
             />
           </div>
 
           <div className="form-group">
             <label htmlFor="lastname">
-              <MdDriveFileRenameOutline /> Фамилия*
+              <MdDriveFileRenameOutline /> Last name*
             </label>
             <input
               type="text"
@@ -161,14 +161,14 @@ function Register() {
               name="lastname"
               value={formData.lastname}
               onChange={handleChange}
-              placeholder="Въведете вашата фамилия"
+              placeholder="Your last name"
               required
             />
           </div>
 
           <div className="form-group">
             <label htmlFor="username">
-              <FaUser /> Потребителско име*
+              <FaUser /> Username*
             </label>
             <input
               type="text"
@@ -176,14 +176,14 @@ function Register() {
               name="username"
               value={formData.username}
               onChange={handleChange}
-              placeholder="Изберете потребителско име"
+              placeholder="Your username"
               required
             />
           </div>
 
           <div className="form-group">
             <label htmlFor="email">
-              <FaEnvelope /> Email адрес*
+              <FaEnvelope /> Email*
             </label>
             <input
               type="email"
@@ -191,14 +191,14 @@ function Register() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Въведете вашия email"
+              placeholder="Your email"
               required
             />
           </div>
 
           <div className="form-group">
             <label htmlFor="password">
-              <FaLock /> Парола*
+              <FaLock /> Password*
             </label>
             <input
               type="password"
@@ -206,7 +206,7 @@ function Register() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Създайте парола"
+              placeholder="Create password"
               required
               minLength="6"
             />
@@ -228,7 +228,7 @@ function Register() {
 
           <div className="form-group">
             <label htmlFor="confirmPassword">
-              <MdPassword /> Потвърдете паролата*
+              <MdPassword /> Conifirm password*
             </label>
             <input
               type="password"
@@ -236,14 +236,14 @@ function Register() {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              placeholder="Потвърдете паролата"
+              placeholder="Conifirm password"
               required
             />
           </div>
 
           <div className="form-group">
             <label htmlFor="profilePicture">
-              <FaImage /> Профилна снимка
+              <FaImage /> Profile picture
             </label>
             <div className="file-input-container">
               <input
@@ -254,9 +254,9 @@ function Register() {
                 className="file-input"
               />
               <label htmlFor="profilePicture" className="file-input-label">
-                <i className="bi bi-image"></i> {previewImage ? "Смяна на снимка" : "Изберете снимка"}
+                <i className="bi bi-image"></i> {previewImage ? "Change photo" : "Choose photo"}
               </label>
-              <small className="form-hint">Макс. размер: 2MB</small>
+              <small className="form-hint">Max size 2 MB</small>
             </div>
             
             {previewImage && (
@@ -264,7 +264,7 @@ function Register() {
                 <div className="image-preview">
                   <img 
                     src={previewImage} 
-                    alt="Преглед на профилната снимка" 
+                    alt="Preview Image" 
                   />
                   <button 
                     type="button" 
@@ -273,7 +273,7 @@ function Register() {
                       setProfilePicture(null);
                     }}
                     className="remove-image-btn"
-                    aria-label="Премахни снимка"
+                    aria-label="Remove image"
                   >
                     <i className="bi bi-x-lg"></i>
                   </button>
@@ -291,17 +291,17 @@ function Register() {
               {isSubmitting ? (
                 <>
                   <span className="spinner" aria-hidden="true"></span>
-                  <span>Регистриране...</span>
+                  <span>REgistration in progress...</span>
                 </>
               ) : (
                 <>
-                  <FaSignInAlt /> Регистрация
+                  <FaSignInAlt /> Create your account
                 </>
               )}
             </button>
 
             <div className="login-link">
-              Вече имате акаунт? <Link to="/login">Влезте от тук</Link>
+              Already have an account? <Link to="/login">Log in</Link>
             </div>
           </div>
         </form>
