@@ -113,7 +113,7 @@ function MyRecipes() {
 
           {recipes.length === 0 ? (
             <div className="empty-state">
-              <div className="empty-icon">🍳</div>
+              <div className="empty-icon"></div>
               <h3>Все още нямате добавени рецепти</h3>
               <p>Започнете, като добавите първата си рецепта</p>
               <Link to="/add-recipe" className="primary-btn">
@@ -162,12 +162,7 @@ function MyRecipes() {
                       </div>
                     </Link>
                     <div className="recipe-actions">
-                      <button
-                        onClick={() => navigate(`/edit-recipe/${recipe.id}`)}
-                        className="action-btn edit"
-                      >
-                        <FaPencilAlt /> Редактирай
-                      </button>
+                   
                       <button
                         onClick={() => handleDelete(recipe.id)}
                         className="action-btn delete"
