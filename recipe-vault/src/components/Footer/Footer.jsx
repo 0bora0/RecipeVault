@@ -25,26 +25,26 @@ export default function Footer() {
         <div className="footer-links">
           <div className="links-column">
             <h3 className="links-title">Explore</h3>
-            <Link to="/recipes" className="footer-link">All Recipes</Link>
-            <Link to="/categories" className="footer-link">Categories</Link>
-            <Link to="/popular" className="footer-link">Popular</Link>
-            <Link to="/seasonal" className="footer-link">Seasonal</Link>
+            <Link to="/" className="footer-link">All Recipes</Link>
+            <Link to="/" className="footer-link">Categories</Link>
+            <Link to="/" className="footer-link">Popular</Link>
+            <Link to="/" className="footer-link">Seasonal</Link>
           </div>
           
           <div className="links-column">
             <h3 className="links-title">Community</h3>
-            <Link to="/blog" className="footer-link">Blog</Link>
-            <Link to="/forums" className="footer-link">Forums</Link>
-            <Link to="/contribute" className="footer-link">Contribute</Link>
-            <Link to="/events" className="footer-link">Events</Link>
+            <Link to="/" className="footer-link">Blog</Link>
+            <Link to="/" className="footer-link">Forums</Link>
+            <Link to="/" className="footer-link">Contribute</Link>
+            <Link to="/" className="footer-link">Events</Link>
           </div>
           
           <div className="links-column">
             <h3 className="links-title">Company</h3>
-            <Link to="/about" className="footer-link">About Us</Link>
-            <Link to="/contact" className="footer-link">Contact</Link>
-            <Link to="/privacy" className="footer-link">Privacy Policy</Link>
-            <Link to="/terms" className="footer-link">Terms of Service</Link>
+            <Link to="/" className="footer-link">About Us</Link>
+            <Link to="/" className="footer-link">Contact</Link>
+            <Link to="/" className="footer-link">Privacy Policy</Link>
+            <Link to="/" className="footer-link">Terms of Service</Link>
           </div>
         </div>
       </div>
