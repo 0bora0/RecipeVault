@@ -11,6 +11,8 @@ import {
 import { motion } from "framer-motion";
 import Loader from "../../components/Loader";
 import "../RecipeDetails/RecipeDetails.css";
+import Header from "../../components/Header/Header";
+import Footer from "../../components/Footer/Footer";
 
 export default function RecipeDetails() {
   const { id } = useParams();
@@ -92,7 +94,8 @@ export default function RecipeDetails() {
 
   if (error || !recipe)
     return (
-  <>
+      <div className="add-recipe-page">
+         <Header />
       <motion.div
         className="recipe-error-container"
         initial={{ opacity: 0 }}
@@ -110,10 +113,12 @@ export default function RecipeDetails() {
           Опитайте отново
         </button>
       </motion.div>
-      </>
+      <Footer />
+      </div>
     );
   return (
-    <>
+    <div className="recipe-page">
+         <Header />
     <motion.div
       className="recipe-details-container"
       initial="hidden"
@@ -300,7 +305,8 @@ export default function RecipeDetails() {
         </motion.div>
       </div>
     </motion.div>
-    </>
+    <Footer />
+    </div>
   )
 };
 

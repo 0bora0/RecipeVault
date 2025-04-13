@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { db } from "../../services/firebaseConfig";
 import {
   collection,
   query,
-  where,
   getDocs,
   doc,
   deleteDoc,
@@ -12,43 +11,52 @@ import {
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import "../MyRecipes/MyRecipes.css";
+import Header from "../../components/Header/Header";
+import Footer from "../../components/Footer/Footer";
 
 function MyRecipes() {
-  const { userId } = useParams();  
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [recipes, setRecipes] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [filterAuthor, setFilterAuthor] = useState("all");
 
   useEffect(() => {
-    if (!userId) {
-      // If no userId, redirect to the login page
-      navigate("/login");
-      return;
-    }
-
-    const fetchRecipes = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch all recipes
         const recipesRef = collection(db, "recipes");
-        const q = query(recipesRef, where("authorId", "==", userId));
-        const querySnapshot = await getDocs(q);
+        const recipesQuery = query(recipesRef);
+        const recipesSnapshot = await getDocs(recipesQuery);
 
         const recipesData = [];
-        querySnapshot.forEach((doc) => {
+        recipesSnapshot.forEach((doc) => {
           recipesData.push({ id: doc.id, ...doc.data() });
         });
 
+        // Fetch all users to show in filter
+        const usersRef = collection(db, "users");
+        const usersQuery = query(usersRef);
+        const usersSnapshot = await getDocs(usersQuery);
+
+        const usersData = [];
+        usersSnapshot.forEach((doc) => {
+          usersData.push({ id: doc.id, ...doc.data() });
+        });
+
         setRecipes(recipesData);
+        setAllUsers(usersData);
       } catch (error) {
-        console.error("Error loading recipes:", error);
-        setError("Error loading recipes");
+        console.error("Error loading data:", error);
+        setError("Error loading recipes and users");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchRecipes();
-  }, [userId, navigate]);
+    fetchData();
+  }, []);
 
   const handleDelete = async (recipeId) => {
     confirmAlert({
@@ -79,16 +87,26 @@ function MyRecipes() {
     navigate(`/edit-recipe/${recipeId}`);
   };
 
+  const filteredRecipes = filterAuthor === "all" 
+    ? recipes 
+    : recipes.filter(recipe => recipe.authorId === filterAuthor);
+
+  const getUserName = (userId) => {
+    const user = allUsers.find(user => user.id === userId);
+    return user ? user.displayName || user.email : "Unknown User";
+  };
+
   if (loading)
     return (
       <div className="loading-container">
         <div className="spinner"></div>
-        <p>Loading your recipes...</p>
+        <p>Loading recipes...</p>
       </div>
     );
 
   if (error)
     return (
+
       <div className="error-container">
         <i className="bi bi-exclamation-triangle"></i>
         <p>{error}</p>
@@ -99,27 +117,39 @@ function MyRecipes() {
     );
 
   return (
+    <div className="my-recipes-page">
+      <Header />
     <div className="my-recipes-container">
       <div className="my-recipes-header">
         <h1>
-          <i className="bi bi-journal-bookmark"></i> My Recipes
+          <i className="bi bi-journal-bookmark"></i> All Recipes
         </h1>
-        <Link to="/add-recipe" className="add-recipe-btn">
-          <i className="bi bi-plus-circle"></i> Add New Recipe
-        </Link>
+        <div className="filter-container">
+          <label htmlFor="author-filter">Filter by author:</label>
+          <select 
+            id="author-filter"
+            value={filterAuthor}
+            onChange={(e) => setFilterAuthor(e.target.value)}
+            className="filter-select"
+          >
+            <option value="all">All Authors</option>
+            {allUsers.map(user => (
+              <option key={user.id} value={user.id}>
+                {user.displayName || user.email}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      {recipes.length === 0 ? (
+      {filteredRecipes.length === 0 ? (
         <div className="empty-state">
           <i className="bi bi-emoji-frown"></i>
-          <p>You have no recipes yet.</p>
-          <Link to="/add-recipe" className="add-recipe-btn">
-            <i className="bi bi-plus-circle"></i> Add Your First Recipe
-          </Link>
+          <p>No recipes found{filterAuthor !== "all" ? " for this author" : ""}.</p>
         </div>
       ) : (
         <div className="recipes-grid">
-          {recipes.map((recipe) => (
+          {filteredRecipes.map((recipe) => (
             <div key={recipe.id} className="recipe-card">
               {recipe.imageBase64 ? (
                 <img
@@ -136,6 +166,9 @@ function MyRecipes() {
               <div className="recipe-content">
                 <h3>{recipe.title}</h3>
                 <div className="recipe-meta">
+                  <span>
+                    <i className="bi bi-person"></i> {getUserName(recipe.authorId)}
+                  </span>
                   <span>
                     <i className="bi bi-clock"></i>{" "}
                     {new Date(recipe.createdAt?.toDate()).toLocaleDateString()}
@@ -173,6 +206,9 @@ function MyRecipes() {
           ))}
         </div>
       )}
+    </div>
+
+    <Footer />
     </div>
   );
 }

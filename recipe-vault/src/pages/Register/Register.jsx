@@ -99,7 +99,7 @@ function Register() {
         createdAt: new Date(),
         lastLogin: new Date()
       });
-      navigate("/dashboard");
+      navigate("/");
     } catch (error) {
       console.error("Registration error:", error.message);
       if (error.code === "auth/email-already-in-use") {

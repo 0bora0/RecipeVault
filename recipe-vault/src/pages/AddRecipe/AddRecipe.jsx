@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../../services/firebaseConfig';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import './AddRecipe.css';
+import Header from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer';
 
 
 function AddRecipe() {
@@ -98,6 +100,8 @@ function AddRecipe() {
   };
 
   return (
+    <div className="add-recipe-page">
+      <Header />
     <div className="add-recipe-container">
       <h1>Добави нова рецепта</h1>
       
@@ -225,6 +229,9 @@ function AddRecipe() {
         </div>
       </form>
     </div>
+    <Footer />
+    </div>
+
   );
 }
 

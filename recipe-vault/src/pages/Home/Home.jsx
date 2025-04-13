@@ -6,6 +6,8 @@ import SearchAndFilter from '../../components/SearchAndFilter';
 import Loader from '../../components/Loader';
 import { Link } from 'react-router-dom';
 import { FaPlusCircle, FaSearch } from 'react-icons/fa';
+import Header from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer';
 import './Home.css';
 
 export default function Home() {
@@ -24,6 +26,8 @@ export default function Home() {
   }, [dispatch, searchQuery, selectedCategory]);
 
   return (
+    <div className="app-container">
+      <Header />
     <div className="home-page">
       <Link to="/add-recipe" className="floating-add-btn">
         <FaPlusCircle />
@@ -36,15 +40,6 @@ export default function Home() {
       </div>
 
       <div className="main-content">
-        <div className="top-bar">
-          <div className="search-container">
-            <FaSearch className="search-icon" />
-            <SearchAndFilter />
-          </div>
-          <Link to="/add-recipe" className="add-recipe-btn">
-            <FaPlusCircle /> Add recipe
-          </Link>
-        </div>
         {loading && <Loader />}
 
         {error && (
@@ -73,6 +68,8 @@ export default function Home() {
           ))}
         </div>
       </div>
+    </div>
+    <Footer />
     </div>
   );
 }

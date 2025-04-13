@@ -15,9 +15,9 @@ export default function SearchBar({ onSearch }) {
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Търси рецепта..."
+        placeholder="Search recipes..."
       />
-      <button onClick={handleSearch}>Търси</button>
+      <button onClick={handleSearch}>Search</button>
     </div>
   );
 }

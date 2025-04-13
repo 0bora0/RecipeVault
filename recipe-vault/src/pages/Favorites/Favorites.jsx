@@ -5,7 +5,8 @@ import RecipeCard from '../../components/RecipeCard';
 import { FaHeartBroken, FaHeart } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import '../Favorites/Favorites.css';
-import Navbar from '../../components/Navbar';
+import Header from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer';
 
 export default function Favorites() {
   const favorites = useSelector(state => state.recipes.favorites);
@@ -28,8 +29,8 @@ export default function Favorites() {
   };
 
   return (
-    <>
-    <Navbar/>
+   <div className="my-recipes-page">
+         <Header />
     <motion.div 
       className="favorites-page py-8 px-4 md:px-8 min-h-screen bg-gradient-to-b from-rose-50 to-white"
       initial={{ opacity: 0 }}
@@ -86,6 +87,7 @@ export default function Favorites() {
         )}
       </div>
     </motion.div>
-    </>
+    <Footer />
+  </div>
   );
 }

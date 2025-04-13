@@ -117,18 +117,18 @@
   gap: 0.5rem;
   padding: 0.8rem 1.5rem;
   background: #f0f7ff;
-  color: #1e88e5;
+  color: #ff7b25;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 1px dashed #1e88e5;
+  border: 1px dashed #ff7b25;
   text-align: center;
   justify-content: center;
 }
 
 .file-input-label:hover {
   background: #e1f0ff;
-  border-color: #0d6efd;
+  border-color: #ff7b25;
 }
 
 .file-input-label i {
@@ -172,7 +172,7 @@
 }
 
 .remove-image-btn:hover {
-  background: rgba(255, 0, 0, 0.9);
+  background: rgba(174, 7, 7, 0.9);
   transform: scale(1.1);
 }
 
@@ -255,3 +255,4 @@
     justify-content: center;
   }
 }
+

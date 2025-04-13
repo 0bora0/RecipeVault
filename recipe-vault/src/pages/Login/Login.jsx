@@ -31,7 +31,7 @@ function Login() {
 
     try {
       await signInWithEmailAndPassword(auth, formData.email, formData.password);
-      navigate("/my-recipes");
+      navigate("/");
     } catch (err) {
       console.error("Login error:", err);
       if (err.code === "auth/user-not-found") {

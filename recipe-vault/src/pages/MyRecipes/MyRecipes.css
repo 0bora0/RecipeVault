@@ -1,240 +1,26 @@
-.my-recipes-container {
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 1rem;
-}
-
-.my-recipes-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.my-recipes-header h1 {
-  font-size: 2rem;
-  color: #2d3436;
+.filter-container {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin: 0;
-}
-
-.add-recipe-btn {
-  background-color: #6c5ce7;
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.add-recipe-btn:hover {
-  background-color: #5649c0;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
-}
-
-.empty-state {
-  text-align: center;
-  padding: 3rem;
-  background-color: #f5f6fa;
-  border-radius: 12px;
-}
-
-.empty-state i {
-  font-size: 3rem;
-  color: #b2bec3;
   margin-bottom: 1rem;
 }
 
-.empty-state p {
-  font-size: 1.2rem;
-  color: #636e72;
-  margin-bottom: 1.5rem;
-}
-
-.recipes-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1rem;
-}
-
-.recipe-card {
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.recipe-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-.recipe-image {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  display: block;
-}
-
-.recipe-image-placeholder {
-  width: 100%;
-  height: 200px;
-  background-color: #f5f6fa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #b2bec3;
-  font-size: 3rem;
-}
-
-.recipe-content {
-  padding: 1.5rem;
-}
-
-.recipe-content h3 {
-  margin: 0 0 1rem 0;
-  color: #2d3436;
-  font-size: 1.25rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.recipe-meta {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  color: #636e72;
-  font-size: 0.9rem;
-}
-
-.recipe-meta span {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.recipe-actions {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.action-btn {
-  padding: 0.5rem 1rem;
-  border: none;
+.filter-select {
+  padding: 0.5rem;
   border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
-}
-
-.view-btn {
-  background-color: #00b894;
-  color: white;
-}
-
-.view-btn:hover {
-  background-color: #00a884;
-}
-
-.edit-btn {
-  background-color: #0984e3;
-  color: white;
-}
-
-.edit-btn:hover {
-  background-color: #0777d1;
-}
-
-.delete-btn {
-  background-color: #d63031;
-  color: white;
-}
-
-.delete-btn:hover {
-  background-color: #c23636;
-}
-
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 300px;
-  gap: 1rem;
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(108, 92, 231, 0.2);
-  border-radius: 50%;
-  border-top-color: #6c5ce7;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.error-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 300px;
-  gap: 1rem;
-  text-align: center;
-}
-
-.error-container i {
-  font-size: 2rem;
-  color: #d63031;
-}
-
-.retry-btn {
-  padding: 0.75rem 1.5rem;
-  background-color: #6c5ce7;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.retry-btn:hover {
-  background-color: #5649c0;
+  border: 1px solid #ddd;
+  background-color: white;
+  font-size: 1rem;
 }
 
 @media (max-width: 768px) {
-  .recipe-actions {
-    flex-direction: column;
-  }
-
-  .action-btn {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .my-recipes-header {
+  .filter-container {
     flex-direction: column;
     align-items: flex-start;
+    width: 100%;
+  }
+  
+  .filter-select {
+    width: 100%;
   }
 }

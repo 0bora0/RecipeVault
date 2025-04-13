@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_KEY = "6f8af30a72db4e6dbdd244dc39fc3965";
+const API_KEY = "091da16b176443aa83262900242d3450";
 const BASE_URL = "https://api.spoonacular.com/recipes";
 
 /**

@@ -5,11 +5,11 @@ import Home from './pages/Home/Home';
 import AddRecipe from './pages/AddRecipe/AddRecipe';
 import RecipeDetails from './pages/RecipeDetails/RecipeDetails';
 import Favorites from './pages/Favorites/Favorites';
-import Navbar from './components/Navbar';
 import MyRecipes from './pages/MyRecipes/MyRecipes';
 import EditRecipe from './components/EditRecipe';
 import Login from './pages//Login/Login';
 import Register from './pages/Register/Register'; 
+import ProfileEdit from './pages/ProfileEdit/ProfileEdit';
 
 function App() {
   return (
@@ -25,6 +25,7 @@ function App() {
             <Route path="/edit-recipe/:recipeId" element={<EditRecipe />} />
             <Route path="/login" element={<Login />} /> 
             <Route path="/register" element={<Register />} /> 
+            <Route path="/profile-edit" element={<ProfileEdit />} />
           </Routes>
         </div>
       </Router>
