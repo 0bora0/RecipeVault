@@ -219,9 +219,9 @@ function Register() {
                 }}
               ></div>
               <div className="strength-labels">
-                <span style={{ color: passwordStrength >= 1 ? getPasswordStrengthColor() : "#ccc" }}>Слаба</span>
-                <span style={{ color: passwordStrength >= 3 ? getPasswordStrengthColor() : "#ccc" }}>Средна</span>
-                <span style={{ color: passwordStrength >= 5 ? getPasswordStrengthColor() : "#ccc" }}>Силна</span>
+                <span style={{ color: passwordStrength >= 1 ? getPasswordStrengthColor() : "#ccc" }}>Weak</span>
+                <span style={{ color: passwordStrength >= 3 ? getPasswordStrengthColor() : "#ccc" }}>Medium</span>
+                <span style={{ color: passwordStrength >= 5 ? getPasswordStrengthColor() : "#ccc" }}>Strong</span>
               </div>
             </div>
           </div>
