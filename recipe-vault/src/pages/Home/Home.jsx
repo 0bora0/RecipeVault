@@ -31,7 +31,7 @@ export default function Home() {
       <div className="hero-section">
         <div className="hero-content">
           <h1>RecipeVault</h1>
-          <p>Открий и запази любимите си кулинарни творения</p>
+          <p>Discover and save your favorite culinary creations</p>
         </div>
       </div>
 
@@ -42,7 +42,7 @@ export default function Home() {
             <SearchAndFilter />
           </div>
           <Link to="/add-recipe" className="add-recipe-btn">
-            <FaPlusCircle /> Добави рецепта
+            <FaPlusCircle /> Add recipe
           </Link>
         </div>
         {loading && <Loader />}
@@ -55,11 +55,11 @@ export default function Home() {
 
         {!loading && recipes.length === 0 && (
           <div className="empty-state">
-            <img src="/images/empty-recipes.svg" alt="Няма рецепти" />
-            <h3>Няма намерени рецепти</h3>
-            <p>Опитайте с различни критерии за търсене или добавете нова рецепта</p>
+            <img src="/images/empty-recipes.svg" alt="No recipes" />
+            <h3>No results available</h3>
+            <p>Try different search criteria or add a new recipe</p>
             <Link to="/add-recipe" className="add-recipe-btn">
-              <FaPlusCircle /> Добави първата рецепта
+              <FaPlusCircle /> Add your first recipe
             </Link>
           </div>
         )}

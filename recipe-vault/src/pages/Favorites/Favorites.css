@@ -1,13 +1,163 @@
 .favorites-page {
-  background: linear-gradient(to bottom, #fff1f2, #fff);
+  background: linear-gradient(to bottom, rgba(255, 236, 239, 0.8), rgba(255, 255, 255, 1));
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.remove-favorite-btn {
-  box-shadow: 0 4px 15px rgba(225, 29, 72, 0.2);
+.favorites-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.favorites-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.favorites-header h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: #ff5e62;
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.favorites-header h1 svg {
+  margin-right: 1rem;
+  filter: drop-shadow(0 2px 4px rgba(255, 94, 98, 0.3));
+}
+
+.favorites-header h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, #ff7b25, #ff5e62);
+  border-radius: 2px;
+}
+
+.empty-favorites {
+  text-align: center;
+  padding: 4rem 0;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.empty-favorites svg {
+  font-size: 4rem;
+  color: #ffb8bb;
+  margin-bottom: 1.5rem;
+  animation: pulse 2s infinite;
+}
+
+.empty-favorites p {
+  font-size: 1.2rem;
+  color: #7f8c8d;
+  margin-bottom: 0.5rem;
+}
+
+.empty-favorites p:last-child {
+  font-size: 1rem;
+  color: #bdc3c7;
+}
+
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  padding: 1rem 0;
+}
+
+.favorite-item {
+  position: relative;
   transition: all 0.3s ease;
 }
 
+.remove-favorite-btn {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 44px;
+  height: 44px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  color: #ff5e62;
+}
+
 .remove-favorite-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(225, 29, 72, 0.3);
+  background: #ff5e62;
+  color: white;
+  transform: scale(1.1) rotate(8deg);
+}
+
+.remove-favorite-btn svg {
+  font-size: 1.2rem;
+}
+
+.favorite-item:hover {
+  transform: translateY(-5px);
+}
+
+.favorite-item:hover .recipe-card {
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+@media (max-width: 1024px) {
+  .favorites-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .favorites-header h1 {
+    font-size: 2.2rem;
+  }
+  
+  .favorites-grid {
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .favorites-page {
+    padding: 1.5rem 0.5rem;
+  }
+  
+  .favorites-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .favorites-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .remove-favorite-btn {
+    width: 36px;
+    height: 36px;
+  }
 }

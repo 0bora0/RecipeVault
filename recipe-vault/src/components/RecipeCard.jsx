@@ -21,7 +21,7 @@ export default function RecipeCard({ recipe }) {
   };
 
   const formatTime = (minutes) => {
-    if (!minutes) return 'Не е посочено време';
+    if (!minutes) return 'No cooking time specified';
     return minutes > 60 
       ? `${Math.floor(minutes / 60)}h ${minutes % 60}m` 
       : `${minutes}m`;
@@ -64,7 +64,7 @@ export default function RecipeCard({ recipe }) {
             
             <div className="meta-item">
               <FaUtensils className="meta-icon" />
-              <span>{recipe.servings || 'N/A'} порции</span>
+              <span>{recipe.servings || 'No listed portions'} portions</span>
             </div>
             
             {recipe.calories && (

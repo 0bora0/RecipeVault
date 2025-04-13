@@ -36,20 +36,20 @@ export default function RecipeDetails() {
         const data = await fetchRecipeDetails(id);
 
         if (!data || data.error) {
-          throw new Error(data?.message || "Неуспешно зареждане на рецепта");
+          throw new Error(data?.message || "Failed to load recipe");
         }
 
         const normalizedRecipe = {
           id: data.id,
-          title: data.title || "Рецепта без име",
+          title: data.title || "No recipe name",
           image: data.image,
           ingredients: Array.isArray(data.ingredients)
             ? data.ingredients
-            : ["Няма налични съставки"],
-          instructions: data.instructions || "Няма налични инструкции",
+            : ["No ingredients available"],
+          instructions: data.instructions || "No instructions available",
           nutrition: data.nutrition || { nutrients: [] },
-          servings: data.servings || "Не е посочено",
-          readyInMinutes: data.readyInMinutes || "Не е посочено",
+          servings: data.servings || "No listed portions",
+          readyInMinutes: data.readyInMinutes || "No cooking time specified",
           analyzedInstructions: Array.isArray(data.analyzedInstructions)
             ? data.analyzedInstructions
             : [{ steps: [] }],
@@ -59,7 +59,7 @@ export default function RecipeDetails() {
 
         setRecipe(normalizedRecipe);
       } catch (err) {
-        console.error("Грешка при зареждане на рецепта:", err);
+        console.error("Error loading recipe:", err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -101,7 +101,7 @@ export default function RecipeDetails() {
         <FaClock className="recipe-error-icon" />
         <h1 className="recipe-error-title">Грешка при зареждане</h1>
         <p className="recipe-error-message">
-          {error || "Рецептата не е намерена. Моля, опитайте с друга рецепта."}
+          {error || "Recipe not found. Please try another recipe."}
         </p>
         <button
           className="retry-button"
@@ -153,7 +153,7 @@ export default function RecipeDetails() {
                   whileHover={{ y: -3, scale: 1.05 }}
                 >
                   <FaClock className="recipe-meta-icon" />
-                  <span>{recipe.readyInMinutes} минути</span>
+                  <span>{recipe.readyInMinutes} minutes</span>
                 </motion.div>
 
                 <motion.div
@@ -162,7 +162,7 @@ export default function RecipeDetails() {
                   whileHover={{ y: -3, scale: 1.05 }}
                 >
                   <FaUtensils className="recipe-meta-icon" />
-                  <span>{recipe.servings} порции</span>
+                  <span>{recipe.servings} portions</span>
                 </motion.div>
 
                 {recipe.cuisines.length > 0 && (
@@ -197,7 +197,7 @@ export default function RecipeDetails() {
               onClick={() => setActiveTab("ingredients")}
             >
               <FaListUl className="recipe-tab-icon" />
-              <span>Съставки</span>
+              <span>Ingredients</span>
             </button>
 
             <button
@@ -207,7 +207,7 @@ export default function RecipeDetails() {
               onClick={() => setActiveTab("instructions")}
             >
               <FaBookOpen className="recipe-tab-icon" />
-              <span>Инструкции</span>
+              <span>Instructions</span>
             </button>
 
             {recipe.nutrition && recipe.nutrition.nutrients?.length > 0 && (
@@ -218,7 +218,7 @@ export default function RecipeDetails() {
                 onClick={() => setActiveTab("nutrition")}
               >
                 <FaChartPie className="recipe-tab-icon" />
-                <span>Хранителни стойности</span>
+                <span>Nutritional values</span>
               </button>
             )}
           </div>
@@ -226,7 +226,7 @@ export default function RecipeDetails() {
         <motion.div className="tab-content-container" variants={slideUp}>
           {activeTab === "ingredients" && (
             <div className="ingredients-section">
-              <h2 className="section-title">Необходими съставки</h2>
+              <h2 className="section-title">Recipe ingredients</h2>
               <div className="ingredients-grid">
                 {recipe.ingredients.map((ingredient, index) => (
                   <motion.div
@@ -249,7 +249,7 @@ export default function RecipeDetails() {
 
           {activeTab === "instructions" && (
             <div className="instructions-section">
-              <h2 className="section-title">Начин на приготвяне</h2>
+              <h2 className="section-title">Preparation steps</h2>
               <div className="instructions-container">
                 {recipe.analyzedInstructions[0].steps.length > 0 ? (
                   recipe.analyzedInstructions[0].steps.map((step, index) => (
@@ -267,7 +267,7 @@ export default function RecipeDetails() {
                 ) : recipe.instructions ? (
                   formatInstructions(recipe.instructions)
                 ) : (
-                  <p className="no-data-message">Инструкциите не са налични</p>
+                  <p className="no-data-message">Instructions are not available.</p>
                 )}
               </div>
             </div>
@@ -275,7 +275,7 @@ export default function RecipeDetails() {
 
           {activeTab === "nutrition" && recipe.nutrition && (
             <div className="nutrition-section">
-              <h2 className="section-title">Хранителна стойност</h2>
+              <h2 className="section-title">Nutritional values</h2>
               <div className="nutrition-facts-wrapper">
                 {recipe.nutrition.nutrients.map((nutrient, index) => (
                   <div
