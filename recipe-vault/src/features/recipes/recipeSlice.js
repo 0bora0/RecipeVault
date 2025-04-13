@@ -46,16 +46,18 @@ const recipeSlice = createSlice({
       );
     },
     toggleFavorite: (state, action) => {
-              const recipeId = action.payload.id;
-              const index = state.favorites.findIndex(recipe => recipe.id === recipeId);
-              
-              if (index >= 0) {
-                state.favorites.splice(index, 1);
-              } else {
-                state.favorites.push(action.payload);
-              }
-            },
-          
+      const recipeId = action.payload.id;
+      const index = state.favorites.findIndex(
+        (recipe) => recipe.id === recipeId
+      );
+
+      if (index >= 0) {
+        state.favorites.splice(index, 1);
+      } else {
+        state.favorites.push(action.payload);
+      }
+    },
+
     addRecipe: (state, action) => {
       state.recipes.unshift({
         ...action.payload,
@@ -87,7 +89,7 @@ export const {
   addFavorite,
   removeFavorite,
   addRecipe,
-  toggleFavorite
+  toggleFavorite,
 } = recipeSlice.actions;
 
 export default recipeSlice.reducer;

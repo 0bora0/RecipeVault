@@ -54,15 +54,12 @@ function Login() {
 
   return (
     <div className="login-page">
-      {/* Left Side - Full Page Image Section */}
       <div className="login-image">
         <div className="login-image-content">
           <h1>Добре дошли в RecipeApp</h1>
           <p>Влезте в своя акаунт, за да получите достъп до вашите любими рецепти и кулинарни идеи.</p>
         </div>
       </div>
-
-      {/* Right Side - Full Page Form Section */}
       <div className="login-container">
         <div className="login-header">
           <h2><FaSignInAlt /> Влезте в профила си</h2>

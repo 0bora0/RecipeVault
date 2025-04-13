@@ -6,11 +6,10 @@ import AddRecipe from './pages/AddRecipe/AddRecipe';
 import RecipeDetails from './pages/RecipeDetails/RecipeDetails';
 import Favorites from './pages/Favorites/Favorites';
 import Navbar from './components/Navbar';
-import MyRecipes from './components/MyRecipes';
+import MyRecipes from './pages/MyRecipes/MyRecipes';
 import EditRecipe from './components/EditRecipe';
 import Login from './pages//Login/Login';
 import Register from './pages/Register/Register'; 
-import './App.css';
 
 function App() {
   return (

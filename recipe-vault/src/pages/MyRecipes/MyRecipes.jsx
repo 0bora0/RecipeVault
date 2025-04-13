@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { db } from "../services/firebaseConfig";
+import { db } from "../../services/firebaseConfig";
 import {
   collection,
   query,
@@ -11,11 +11,11 @@ import {
 } from "firebase/firestore";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
-import "../styles/MyRecipes.css";
+import "../MyRecipes/MyRecipes.css";
 
 function MyRecipes() {
-  const { userId } = useParams();  // Extract userId from the URL params
-  const navigate = useNavigate();  // Hook to redirect user to another page
+  const { userId } = useParams();  
+  const navigate = useNavigate(); 
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

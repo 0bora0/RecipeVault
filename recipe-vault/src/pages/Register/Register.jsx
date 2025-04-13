@@ -30,7 +30,6 @@ function Register() {
       [name]: value
     }));
 
-    // Проверка за сила на паролата
     if (name === "password") {
       const strength = calculatePasswordStrength(value);
       setPasswordStrength(strength);
@@ -50,8 +49,6 @@ function Register() {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    // Проверка за размер на файла (макс. 2MB)
     if (file.size > 2 * 1024 * 1024) {
       setError("Снимката трябва да е по-малка от 2MB");
       return;
@@ -73,7 +70,6 @@ function Register() {
     setIsSubmitting(true);
     setError("");
 
-    // Валидации
     if (formData.password !== formData.confirmPassword) {
       setError("Паролите не съвпадат!");
       setIsSubmitting(false);
@@ -87,15 +83,12 @@ function Register() {
     }
 
     try {
-      // Създаване на потребител в Firebase Authentication
       const userCredential = await createUserWithEmailAndPassword(
         auth, 
         formData.email, 
         formData.password
       );
       const user = userCredential.user;
-
-      // Запазване на допълнителни данни във Firestore
       const userRef = doc(db, "users", user.uid);
       await setDoc(userRef, {
         name: formData.name,
@@ -106,12 +99,9 @@ function Register() {
         createdAt: new Date(),
         lastLogin: new Date()
       });
-
-      // Пренасочване след успешна регистрация
       navigate("/dashboard");
     } catch (error) {
       console.error("Грешка при регистрация:", error.message);
-      // Превод на често срещани грешки
       if (error.code === "auth/email-already-in-use") {
         setError("Този email адрес вече се използва.");
       } else if (error.code === "auth/weak-password") {

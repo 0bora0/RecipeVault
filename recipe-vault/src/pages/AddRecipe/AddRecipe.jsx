@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../../services/firebaseConfig';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import './AddRecipe.css';
-import Header from '../../components/Header/Header';
-import Footer from '../../components/Footer/Footer';
+
 
 function AddRecipe() {
   const [formData, setFormData] = useState({

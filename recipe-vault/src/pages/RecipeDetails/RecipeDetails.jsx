@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchRecipeDetails } from "../../api/spoonacular";
-import NutritionFacts from "../../components/NutritionFacts";
 import {
   FaUtensils,
   FaListUl,
@@ -122,7 +121,6 @@ export default function RecipeDetails() {
       variants={fadeIn}
     >
       <div className="recipe-content-wrapper">
-        {/* Хедър секция */}
         <motion.div className="recipe-header-grid" variants={slideUp}>
           <motion.div
             className="recipe-image-wrapper"
@@ -190,7 +188,6 @@ export default function RecipeDetails() {
           </div>
         </motion.div>
 
-        {/* Табове за навигация */}
         <motion.div className="recipe-tabs-container" variants={slideUp}>
           <div className="recipe-tabs">
             <button
@@ -226,10 +223,7 @@ export default function RecipeDetails() {
             )}
           </div>
         </motion.div>
-
-        {/* Съдържание на табовете */}
         <motion.div className="tab-content-container" variants={slideUp}>
-          {/* Съставки */}
           {activeTab === "ingredients" && (
             <div className="ingredients-section">
               <h2 className="section-title">Необходими съставки</h2>
@@ -253,7 +247,6 @@ export default function RecipeDetails() {
             </div>
           )}
 
-          {/* Инструкции */}
           {activeTab === "instructions" && (
             <div className="instructions-section">
               <h2 className="section-title">Начин на приготвяне</h2>
@@ -280,7 +273,6 @@ export default function RecipeDetails() {
             </div>
           )}
 
-          {/* Хранителни стойности */}
           {activeTab === "nutrition" && recipe.nutrition && (
             <div className="nutrition-section">
               <h2 className="section-title">Хранителна стойност</h2>

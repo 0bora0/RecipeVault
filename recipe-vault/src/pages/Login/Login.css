@@ -1,6 +1,4 @@
-/* Login.css - Split Screen Premium Version */
 
-/* Base Styles */
 .login-page {
   display: flex;
   min-height: 100vh;
@@ -8,7 +6,6 @@
   background: #fff;
 }
 
-/* Image Section */
 .login-image {
   flex: 1;
   background: 
@@ -53,7 +50,6 @@
   text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
-/* Form Section */
 .login-container {
   flex: 1;
   max-width: 500px;
@@ -84,7 +80,6 @@
   font-size: 1rem;
 }
 
-/* Error Message */
 .error-message {
   background: #ffebee;
   color: #d32f2f;
@@ -102,7 +97,6 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Form Styles */
 .login-form {
   display: flex;
   flex-direction: column;
@@ -124,7 +118,6 @@
   gap: 0.5rem;
 }
 
-/* Input Fields */
 input {
   padding: 1rem;
   border: 1px solid #e0e0e0;
@@ -141,7 +134,6 @@ input:focus {
   background: #fff;
 }
 
-/* Password Input */
 .password-input-container {
   position: relative;
 }
@@ -184,7 +176,6 @@ input:focus {
   color: #ff7b25;
 }
 
-/* Buttons */
 .form-actions {
   display: flex;
   flex-direction: column;
@@ -218,7 +209,6 @@ input:focus {
   cursor: not-allowed;
 }
 
-/* Divider */
 .divider {
   display: flex;
   align-items: center;
@@ -236,7 +226,6 @@ input:focus {
   background: #e0e0e0;
 }
 
-/* Google Button */
 .google-login-btn {
   background: white;
   color: #2c3e50;
@@ -258,7 +247,6 @@ input:focus {
   border-color: #bdc3c7;
 }
 
-/* Register Link */
 .register-link {
   text-align: center;
   margin-top: 1.5rem;
@@ -277,7 +265,6 @@ input:focus {
   text-decoration: underline;
 }
 
-/* Loading Spinner */
 .spinner {
   display: inline-block;
   width: 1rem;
@@ -292,7 +279,6 @@ input:focus {
   to { transform: rotate(360deg); }
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .login-page {
     flex-direction: column;
