@@ -139,8 +139,8 @@ input:focus {
 }
 
 .password-input-container input {
-  width: 100%;
-  padding-right: 40px;
+  width: 94%;
+  
 }
 
 .toggle-password {
@@ -152,7 +152,6 @@ input:focus {
   border: none;
   color: #7f8c8d;
   cursor: pointer;
-  padding: 0.5rem;
   transition: all 0.2s ease;
 }
 
