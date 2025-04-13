@@ -1,215 +1,187 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { db } from "../../services/firebaseConfig";
-import {
-  collection,
-  query,
-  getDocs,
-  doc,
-  deleteDoc,
-} from "firebase/firestore";
+import { collection, query, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
-import "../MyRecipes/MyRecipes.css";
+import { FaHeart, FaRegHeart, FaClock, FaUtensils, FaFire, FaPencilAlt, FaTrash } from "react-icons/fa";
+import "../../styles/RecipeCard.css";
+import "./MyRecipes.css";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 
 function MyRecipes() {
   const navigate = useNavigate();
   const [recipes, setRecipes] = useState([]);
-  const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [filterAuthor, setFilterAuthor] = useState("all");
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchRecipes = async () => {
       try {
-        // Fetch all recipes
         const recipesRef = collection(db, "recipes");
         const recipesQuery = query(recipesRef);
-        const recipesSnapshot = await getDocs(recipesQuery);
+        const querySnapshot = await getDocs(recipesQuery);
 
         const recipesData = [];
-        recipesSnapshot.forEach((doc) => {
+        querySnapshot.forEach((doc) => {
           recipesData.push({ id: doc.id, ...doc.data() });
         });
 
-        // Fetch all users to show in filter
-        const usersRef = collection(db, "users");
-        const usersQuery = query(usersRef);
-        const usersSnapshot = await getDocs(usersQuery);
-
-        const usersData = [];
-        usersSnapshot.forEach((doc) => {
-          usersData.push({ id: doc.id, ...doc.data() });
-        });
-
         setRecipes(recipesData);
-        setAllUsers(usersData);
       } catch (error) {
-        console.error("Error loading data:", error);
-        setError("Error loading recipes and users");
+        console.error("Error loading recipes:", error);
+        setError("Error loading recipes");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    fetchRecipes();
   }, []);
 
   const handleDelete = async (recipeId) => {
     confirmAlert({
-      title: "Confirmation",
-      message: "Are you sure you want to delete this recipe?",
+      title: "Потвърждение",
+      message: "Сигурни ли сте, че искате да изтриете тази рецепта?",
       buttons: [
         {
-          label: "Yes",
+          label: "Да",
           onClick: async () => {
             try {
               await deleteDoc(doc(db, "recipes", recipeId));
               setRecipes(recipes.filter((recipe) => recipe.id !== recipeId));
+              toast.success("Рецептата е изтрита успешно!");
             } catch (error) {
               console.error("Error deleting recipe:", error);
-              setError("Error deleting recipe");
+              toast.error("Грешка при изтриване на рецепта");
             }
           },
         },
         {
-          label: "No",
+          label: "Не",
           onClick: () => {},
         },
       ],
     });
   };
 
-  const handleEdit = (recipeId) => {
-    navigate(`/edit-recipe/${recipeId}`);
+  const formatTime = (minutes) => {
+    if (!minutes) return 'Не е посочено';
+    return minutes > 60 
+      ? `${Math.floor(minutes / 60)}ч ${minutes % 60}мин` 
+      : `${minutes}мин`;
   };
 
-  const filteredRecipes = filterAuthor === "all" 
-    ? recipes 
-    : recipes.filter(recipe => recipe.authorId === filterAuthor);
-
-  const getUserName = (userId) => {
-    const user = allUsers.find(user => user.id === userId);
-    return user ? user.displayName || user.email : "Unknown User";
-  };
-
-  if (loading)
+  if (loading) {
     return (
       <div className="loading-container">
         <div className="spinner"></div>
-        <p>Loading recipes...</p>
+        <p>Зареждане на рецепти...</p>
       </div>
     );
+  }
 
-  if (error)
+  if (error) {
     return (
-
       <div className="error-container">
-        <i className="bi bi-exclamation-triangle"></i>
+        <div className="error-icon">!</div>
         <p>{error}</p>
         <button onClick={() => window.location.reload()} className="retry-btn">
-          Try Again
+          Опитайте отново
         </button>
       </div>
     );
+  }
 
   return (
-    <div className="my-recipes-page">
+    <>
       <Header />
-    <div className="my-recipes-container">
-      <div className="my-recipes-header">
-        <h1>
-          <i className="bi bi-journal-bookmark"></i> All Recipes
-        </h1>
-        <div className="filter-container">
-          <label htmlFor="author-filter">Filter by author:</label>
-          <select 
-            id="author-filter"
-            value={filterAuthor}
-            onChange={(e) => setFilterAuthor(e.target.value)}
-            className="filter-select"
-          >
-            <option value="all">All Authors</option>
-            {allUsers.map(user => (
-              <option key={user.id} value={user.id}>
-                {user.displayName || user.email}
-              </option>
-            ))}
-          </select>
+      <div className="my-recipes-page">
+        <div className="container">
+          <div className="page-header">
+            <h1>
+              <span className="icon-wrapper"><FaUtensils /></span>
+              Моите рецепти
+            </h1>
+            <Link to="/add-recipe" className="add-recipe-btn">
+              <FaPencilAlt /> Добави нова рецепта
+            </Link>
+          </div>
+
+          {recipes.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-icon">🍳</div>
+              <h3>Все още нямате добавени рецепти</h3>
+              <p>Започнете, като добавите първата си рецепта</p>
+              <Link to="/add-recipe" className="primary-btn">
+                <FaPencilAlt /> Добави рецепта
+              </Link>
+            </div>
+          ) : (
+            <div className="recipes-grid">
+              {recipes.map((recipe) => (
+                <div key={recipe.id} className="recipe-card-wrapper">
+                  <div className="recipe-card">
+                    <Link to={`/recipe/${recipe.id}`} className="recipe-link">
+                      <div className="recipe-image-container">
+                        <img 
+                          src={recipe.imageBase64 || '/images/placeholder-food.jpg'} 
+                          alt={recipe.title}
+                          loading="lazy"
+                          className="recipe-image"
+                        />
+                        {recipe.category && (
+                          <div className="category-badge">
+                            {recipe.category}
+                          </div>
+                        )}
+                      </div>
+                      <div className="recipe-content">
+                        <h3 className="recipe-title">{recipe.title}</h3>
+                        <div className="recipe-meta">
+                          <div className="meta-item">
+                            <FaClock className="meta-icon" />
+                            <span>{formatTime(recipe.cookingTime)}</span>
+                          </div>
+                          
+                          <div className="meta-item">
+                            <FaUtensils className="meta-icon" />
+                            <span>{recipe.servings || 'Няма посочени'} порции</span>
+                          </div>
+                          
+                          {recipe.calories && (
+                            <div className="meta-item">
+                              <FaFire className="meta-icon" />
+                              <span>{recipe.calories} kcal</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                    <div className="recipe-actions">
+                      <button
+                        onClick={() => navigate(`/edit-recipe/${recipe.id}`)}
+                        className="action-btn edit"
+                      >
+                        <FaPencilAlt /> Редактирай
+                      </button>
+                      <button
+                        onClick={() => handleDelete(recipe.id)}
+                        className="action-btn delete"
+                      >
+                        <FaTrash /> Изтрий
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
-
-      {filteredRecipes.length === 0 ? (
-        <div className="empty-state">
-          <i className="bi bi-emoji-frown"></i>
-          <p>No recipes found{filterAuthor !== "all" ? " for this author" : ""}.</p>
-        </div>
-      ) : (
-        <div className="recipes-grid">
-          {filteredRecipes.map((recipe) => (
-            <div key={recipe.id} className="recipe-card">
-              {recipe.imageBase64 ? (
-                <img
-                  src={recipe.imageBase64}
-                  alt={recipe.title}
-                  className="recipe-image"
-                />
-              ) : (
-                <div className="recipe-image-placeholder">
-                  <i className="bi bi-image"></i>
-                </div>
-              )}
-
-              <div className="recipe-content">
-                <h3>{recipe.title}</h3>
-                <div className="recipe-meta">
-                  <span>
-                    <i className="bi bi-person"></i> {getUserName(recipe.authorId)}
-                  </span>
-                  <span>
-                    <i className="bi bi-clock"></i>{" "}
-                    {new Date(recipe.createdAt?.toDate()).toLocaleDateString()}
-                  </span>
-                  <span>
-                    <i className="bi bi-heart"></i> {recipe.likes || 0}
-                  </span>
-                  <span>
-                    <i className="bi bi-eye"></i> {recipe.views || 0}
-                  </span>
-                </div>
-
-                <div className="recipe-actions">
-                  <button
-                    onClick={() => navigate(`/recipe/${recipe.id}`)}
-                    className="action-btn view-btn"
-                  >
-                    <i className="bi bi-eye"></i> View
-                  </button>
-                  <button
-                    onClick={() => handleEdit(recipe.id)}
-                    className="action-btn edit-btn"
-                  >
-                    <i className="bi bi-pencil"></i> Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(recipe.id)}
-                    className="action-btn delete-btn"
-                  >
-                    <i className="bi bi-trash"></i> Delete
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-
-    <Footer />
-    </div>
+      <Footer />
+    </>
   );
 }
 
