@@ -1,181 +1,190 @@
 .favorites-page {
-  background: linear-gradient(to bottom, rgba(255, 236, 239, 0.8), rgba(255, 255, 255, 1));
-  min-height: 100vh;
-  padding: 2rem 1rem;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: calc(100vh - 120px);
+  background: linear-gradient(to bottom, #fff9f9 0%, #ffffff 100%);
+  padding-bottom: 3rem;
 }
 
-.favorites-container {
-  max-width: 1400px;
+.page-header {
+  position: relative;
+  padding: 3rem 0;
+  text-align: center;
+  color: white;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.header-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.page-header h1 {
+  font-size: 2.5rem;
+  margin: 0 0 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.heart-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  
+}
+
+.page-header .subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.header-decoration {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="rgba(255,255,255,0.05)" d="M0,0 L100,0 L100,100 L0,100 Z" /><path fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2" d="M0,50 Q25,25 50,50 T100,50" /></svg>');
+  background-size: cover;
+  opacity: 0.5;
+}
+
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(255, 94, 98, 0.1);
+  max-width: 600px;
   margin: 0 auto;
 }
 
-.favorites-header {
-  text-align: center;
-  margin-bottom: 3rem;
-  position: relative;
-}
-
-.favorites-header h1 {
-  font-size: 2.8rem;
-  font-weight: 700;
+.empty-icon {
+  font-size: 3rem;
   color: #ff5e62;
-  display: inline-flex;
-  align-items: center;
-  position: relative;
-  padding-bottom: 1rem;
-}
-
-.favorites-header h1 svg {
-  margin-right: 1rem;
-  filter: drop-shadow(0 2px 4px rgba(255, 94, 98, 0.3));
-}
-
-.favorites-header h1::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100px;
-  height: 4px;
-  background: linear-gradient(90deg, #ff7b25, #ff5e62);
-  border-radius: 2px;
-}
-
-.empty-favorites {
-  text-align: center;
-  padding: 4rem 0;
-  animation: fadeIn 0.8s ease-out;
-}
-
-.empty-favorites svg {
-  font-size: 4rem;
-  color: #ffb8bb;
   margin-bottom: 1.5rem;
-  animation: pulse 2s infinite;
 }
 
-.empty-favorites p {
-  font-size: 1.2rem;
-  color: #7f8c8d;
+.empty-state h3 {
+  font-size: 1.5rem;
+  color: #2c3e50;
   margin-bottom: 0.5rem;
 }
 
-.empty-favorites p:last-child {
-  font-size: 1rem;
-  color: #bdc3c7;
+.empty-state p {
+  color: #7f8c8d;
+  margin-bottom: 1.5rem;
+}
+
+.explore-btn {
+  display: inline-block;
+  padding: 0.8rem 1.8rem;
+  background: linear-gradient(135deg, #ff7b25, #ff5e62);
+  color: white;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(255, 94, 98, 0.3);
+  transition: all 0.3s ease;
+}
+
+.explore-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 94, 98, 0.4);
 }
 
 .favorites-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 2rem;
   padding: 1rem 0;
 }
 
-.favorite-item {
+.favorite-card-wrapper {
   position: relative;
   transition: all 0.3s ease;
 }
 
 .remove-favorite-btn {
   position: absolute;
-  top: -12px;
-  right: -12px;
-  width: 44px;
-  height: 44px;
-  background: white;
+  top: 15px;
+  right: 15px;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 50%;
+  border: none;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 0;
   z-index: 10;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.remove-favorite-btn .filled-heart {
   color: #ff5e62;
+  position: absolute;
+  opacity: 1;
+  transition: all 0.3s ease;
 }
 
-.remove-favorite-btn:hover {
-  background: #ff5e62;
-  color: white;
-  transform: scale(1.1) rotate(8deg);
+.remove-favorite-btn .outline-heart {
+  color: #ff5e62;
+  position: absolute;
+  opacity: 0;
+  transition: all 0.3s ease;
 }
 
-.remove-favorite-btn svg {
-  font-size: 1.2rem;
+.remove-favorite-btn:hover .filled-heart {
+  opacity: 0;
 }
 
-.favorite-item:hover {
-  transform: translateY(-5px);
-}
-
-.favorite-item:hover .recipe-card {
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.05); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.8; }
-}
-
-@media (max-width: 1024px) {
-  .favorites-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  }
+.remove-favorite-btn:hover .outline-heart {
+  opacity: 1;
 }
 
 @media (max-width: 768px) {
-  .favorites-header h1 {
-    font-size: 2.2rem;
+  .page-header h1 {
+    font-size: 2rem;
   }
   
   .favorites-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
   }
 }
 
 @media (max-width: 480px) {
-  .favorites-page {
-    padding: 1.5rem 0.5rem;
+  .page-header {
+    padding: 2rem 0;
   }
   
-  .favorites-header h1 {
+  .page-header h1 {
     font-size: 1.8rem;
   }
   
-  .favorites-grid {
-    grid-template-columns: 1fr;
+  .heart-icon {
+    width: 40px;
+    height: 40px;
   }
   
-  .remove-favorite-btn {
-    width: 36px;
-    height: 36px;
+  .empty-state {
+    padding: 2rem 1rem;
   }
-}
-/* index.css или App.css */
-
-html, body, #root {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  font-family: sans-serif;
-  background-color: #f9f9f9; /* по избор */
-}
-
-/* Премахване на ограниченията на .container */
-.container {
-  width: 100%;
-  max-width: 100%;
-  padding: 0;
-  margin: 0;
 }

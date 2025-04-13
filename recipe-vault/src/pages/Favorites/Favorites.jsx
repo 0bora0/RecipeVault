@@ -2,21 +2,25 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeFavorite } from '../../features/recipes/recipeSlice';
 import RecipeCard from '../../components/RecipeCard';
-import { FaHeartBroken, FaHeart } from 'react-icons/fa';
+import { FaHeart, FaRegHeart, FaHeartBroken } from 'react-icons/fa';
 import { motion } from 'framer-motion';
-import '../Favorites/Favorites.css';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
-import '../../App.css';
+import './Favorites.css';
 
 export default function Favorites() {
   const favorites = useSelector(state => state.recipes.favorites);
   const dispatch = useDispatch();
+
+  // Анимационни варианти
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1, delayChildren: 0.2 }
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
     }
   };
 
@@ -25,70 +29,89 @@ export default function Favorites() {
     visible: {
       y: 0,
       opacity: 1,
-      transition: { type: 'spring', stiffness: 100 }
+      transition: { type: 'spring', stiffness: 120 }
+    },
+    hover: {
+      y: -8,
+      scale: 1.02,
+      transition: { duration: 0.3 }
     }
   };
 
   return (
     <>
-         <Header />
-    <motion.div 
-      className="favorites-page py-8 px-4 md:px-8 min-h-screen bg-gradient-to-b from-rose-50 to-white"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      <div className="max-w-7xl mx-auto">
-        <motion.h1 
-          className="text-4xl md:text-5xl font-bold text-center mb-8 text-rose-600"
-          initial={{ y: -20 }}
-          animate={{ y: 0 }}
-          transition={{ type: 'spring', stiffness: 100 }}
+      <Header />
+      <div className="favorites-page">
+        <motion.div 
+          className="page-header"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          <FaHeart className="inline mr-3" /> Любими рецепти
-        </motion.h1>
-        
-        {favorites.length === 0 ? (
-          <motion.div 
-            className="text-center py-12"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <FaHeartBroken className="mx-auto text-4xl text-rose-300 mb-4" />
-            <p className="text-xl text-gray-600">Все още нямате любими рецепти</p>
-            <p className="text-gray-500 mt-2">Добавете някоя, за да я видите тук!</p>
-          </motion.div>
-        ) : (
-          <motion.div 
-            className="favorites-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {favorites.map(recipe => (
-              <motion.div 
-                key={recipe.id} 
-                className="favorite-item relative group"
-                variants={itemVariants}
-                whileHover={{ y: -5 }}
+          <div className="header-content">
+            <h1>
+              <span className="heart-icon"><FaHeart /></span>
+              Favorite recipes
+            </h1>
+            <p className="subtitle">Your saved culinary masterpieces</p>
+          </div>
+          <div className="header-decoration"></div>
+        </motion.div>
+
+        <div className="page-container">
+          {favorites.length === 0 ? (
+            <motion.div 
+              className="empty-state"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <div className="empty-icon">
+                <FaHeartBroken />
+              </div>
+              <h3>You don't have any favorite recipes yet.</h3>
+              <p>Mark recipes as favorites to see them here</p>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <RecipeCard recipe={recipe} />
-                <motion.button 
-                  onClick={() => dispatch(removeFavorite(recipe.id))}
-                  className="remove-favorite-btn absolute -top-3 -right-3 bg-white rounded-full p-2 shadow-lg text-rose-500 hover:text-white hover:bg-rose-600 transition-all duration-300 group-hover:scale-110"
-                  whileTap={{ scale: 0.9 }}
-                  title="Премахни от любими"
-                >
-                  <FaHeartBroken className="text-xl" />
-                </motion.button>
+                <a href="/" className="explore-btn">
+                Browse recipes
+                </a>
               </motion.div>
-            ))}
-          </motion.div>
-        )}
+            </motion.div>
+          ) : (
+            <motion.div 
+              className="favorites-grid"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              {favorites.map(recipe => (
+                <motion.div 
+                  key={recipe.id}
+                  className="favorite-card-wrapper"
+                  variants={itemVariants}
+                  whileHover="hover"
+                >
+                  <RecipeCard recipe={recipe} />
+                  <motion.button
+                    className="remove-favorite-btn"
+                    onClick={() => dispatch(removeFavorite(recipe.id))}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    title="Премахни от любими"
+                  >
+                    <FaHeart className="filled-heart" />
+                    <FaRegHeart className="outline-heart" />
+                  </motion.button>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </div>
       </div>
-    </motion.div>
-    <Footer />
-</>
+      <Footer />
+    </>
   );
 }
