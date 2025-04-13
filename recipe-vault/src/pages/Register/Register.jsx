@@ -125,7 +125,7 @@ function Register() {
     <div className="register-page">
       <div className="register-container">
         <div className="register-header">
-          <h2><FaSignInAlt /> Create your account</h2>
+          <h2>Create your account</h2>
           <p>Join our community</p>
         </div>
 
