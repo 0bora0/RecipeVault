@@ -9,7 +9,7 @@ import { FaPlusCircle, FaSearch } from 'react-icons/fa';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import './Home.css';
-
+import '../../App.css';
 export default function Home() {
   const dispatch = useDispatch();
   const {
@@ -26,7 +26,7 @@ export default function Home() {
   }, [dispatch, searchQuery, selectedCategory]);
 
   return (
-    <div className="app-container">
+    <>
       <Header />
     <div className="home-page">
       <Link to="/add-recipe" className="floating-add-btn">
@@ -70,6 +70,6 @@ export default function Home() {
       </div>
     </div>
     <Footer />
-    </div>
+    </>
   );
 }

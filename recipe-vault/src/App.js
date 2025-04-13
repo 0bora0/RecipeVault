@@ -10,11 +10,15 @@ import EditRecipe from './components/EditRecipe';
 import Login from './pages//Login/Login';
 import Register from './pages/Register/Register'; 
 import ProfileEdit from './pages/ProfileEdit/ProfileEdit';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function App() {
   return (
+    
     <Provider store={store}>
       <Router>
+        
         <div className="container">
           <Routes>
             <Route path="/" element={<Home />} />
