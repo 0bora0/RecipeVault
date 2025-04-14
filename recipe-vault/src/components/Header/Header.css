@@ -1,4 +1,4 @@
-/* Header.css - Improved Mobile Layout */
+
 .app-header {
   background: linear-gradient(135deg, #ff7b25, #ff5e62);
   color: white;
@@ -204,7 +204,6 @@
   border-radius: 50px;
 }
 
-/* Mobile Styles */
 @media (max-width: 768px) {
   .mobile-menu-button {
     display: block;

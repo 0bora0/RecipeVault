@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../../services/firebaseConfig';
-import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaSave, FaTimes } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaSave, FaTimes,FaInfoCircle, FaLock} from 'react-icons/fa';
 import { MdDriveFileRenameOutline } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 import './ProfileEdit.css';
@@ -16,7 +16,8 @@ export default function ProfileEdit() {
     email: '',
     phone: '',
     address: '',
-    bio: ''
+    bio: '',
+    newPassword: ''
   });
   const [profileImage, setProfileImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
@@ -39,7 +40,10 @@ export default function ProfileEdit() {
         const docSnap = await getDoc(userRef);
 
         if (docSnap.exists()) {
-          setUserData(docSnap.data());
+          setUserData(prev => ({
+            ...prev,
+            ...docSnap.data()
+          }));
           if (docSnap.data().profilePicture) {
             setPreviewImage(docSnap.data().profilePicture);
           }
@@ -92,17 +96,24 @@ export default function ProfileEdit() {
         return;
       }
 
+      if (userData.newPassword) {
+        await user.updatePassword(userData.newPassword);
+      }
+
       const userRef = doc(db, 'users', user.uid);
+      const { newPassword, ...updatedData } = userData;
+
       await updateDoc(userRef, {
-        ...userData,
+        ...updatedData,
         ...(profileImage && { profilePicture: profileImage }),
         updatedAt: new Date()
       });
 
       setSuccess('Profile updated successfully!');
+      setUserData(prev => ({ ...prev, newPassword: '' }));
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError('Failed to update profile');
+      setError('Failed to update profile. If changing password, you may need to log in again.');
       console.error(err);
     }
   };
@@ -118,157 +129,171 @@ export default function ProfileEdit() {
 
   return (
     <div className="profile-edit-page">
-              <Header />
-    <div className="profile-edit-container">
-      <div className="profile-edit-card">
-        <div className="profile-header">
-          <h2><FaUser /> Edit Profile</h2>
-          <button onClick={() => navigate(-1)} className="close-button">
-            <FaTimes />
-          </button>
-        </div>
-
-        {error && (
-          <div className="error-message">
-            <i className="bi bi-exclamation-triangle"></i> {error}
-          </div>
-        )}
-
-        {success && (
-          <div className="success-message">
-            <i className="bi bi-check-circle"></i> {success}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="profile-edit-form">
-          <div className="profile-image-section">
-            <div className="image-preview-container">
-              <div className="image-preview">
-                <img 
-                  src={previewImage || '/images/default-profile.png'} 
-                  alt="Profile preview" 
-                />
-              </div>
-              <div className="image-upload-controls">
-                <input
-                  type="file"
-                  id="profileImage"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="file-input"
-                />
-                <label htmlFor="profileImage" className="upload-button">
-                  Change Photo
-                </label>
-                {previewImage && (
-                  <button 
-                    type="button" 
-                    onClick={() => {
-                      setPreviewImage(null);
-                      setProfileImage(null);
-                    }}
-                    className="remove-button"
-                  >
-                    Remove
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="form-grid">
-            <div className="form-group">
-              <label htmlFor="name">
-                <MdDriveFileRenameOutline /> First Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={userData.name}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="lastname">
-                <MdDriveFileRenameOutline /> Last Name
-              </label>
-              <input
-                type="text"
-                id="lastname"
-                name="lastname"
-                value={userData.lastname}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="email">
-                <FaEnvelope /> Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={userData.email}
-                onChange={handleChange}
-                required
-                disabled
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="phone">
-                <FaPhone /> Phone
-              </label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                value={userData.phone || ''}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="address">
-                <FaMapMarkerAlt /> Address
-              </label>
-              <input
-                type="text"
-                id="address"
-                name="address"
-                value={userData.address || ''}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className="form-group full-width">
-              <label htmlFor="bio">Bio</label>
-              <textarea
-                id="bio"
-                name="bio"
-                value={userData.bio || ''}
-                onChange={handleChange}
-                rows="4"
-                maxLength="200"
-              />
-              <small className="char-count">{userData.bio?.length || 0}/200</small>
-            </div>
-          </div>
-
-          <div className="form-actions">
-            <button type="submit" className="save-button">
-              <FaSave /> Save Changes
+      <Header />
+      <div className="profile-edit-container">
+        <div className="profile-edit-card">
+          <div className="profile-header">
+            <h2><FaUser /> Edit Profile</h2>
+            <button onClick={() => navigate(-1)} className="close-button">
+              <FaTimes />
             </button>
           </div>
-        </form>
+
+          {error && (
+            <div className="error-message">
+              <i className="bi bi-exclamation-triangle"></i> {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="success-message">
+              <i className="bi bi-check-circle"></i> {success}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="profile-edit-form">
+            <div className="profile-image-section">
+              <div className="image-preview-container">
+                <div className="image-preview">
+                  <img 
+                    src={previewImage || '/images/default-profile.png'} 
+                    alt="Profile preview" 
+                  />
+                </div>
+                <div className="image-upload-controls">
+                  <input
+                    type="file"
+                    id="profileImage"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="file-input"
+                  />
+                  <label htmlFor="profileImage" className="upload-button">
+                    Change Photo
+                  </label>
+                  {previewImage && (
+                    <button 
+                      type="button" 
+                      onClick={() => {
+                        setPreviewImage(null);
+                        setProfileImage(null);
+                      }}
+                      className="remove-button"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="form-grid">
+              <div className="form-group">
+                <label htmlFor="name">
+                  <MdDriveFileRenameOutline /> First Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={userData.name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="lastname">
+                  <MdDriveFileRenameOutline /> Last Name
+                </label>
+                <input
+                  type="text"
+                  id="lastname"
+                  name="lastname"
+                  value={userData.lastname}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="email">
+                  <FaEnvelope /> Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={userData.email}
+                  onChange={handleChange}
+                  required
+                  disabled
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="phone">
+                  <FaPhone /> Phone
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={userData.phone || ''}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="address">
+                  <FaMapMarkerAlt /> Address
+                </label>
+                <input
+                  type="text"
+                  id="address"
+                  name="address"
+                  value={userData.address || ''}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="newPassword"> <FaLock /> New Password</label>
+                <input
+                  type="password"
+                  id="newPassword"
+                  name="newPassword"
+                  value={userData.newPassword}
+                  onChange={handleChange}
+                  placeholder="Enter new password (optional)"
+                  minLength="6"
+                />
+              </div>
+              <div className="form-group full-width">
+                <label htmlFor="bio">
+                  <FaInfoCircle /> Bio</label>
+                <textarea
+                  id="bio"
+                  name="bio"
+                  value={userData.bio || ''}
+                  onChange={handleChange}
+                  rows="4"
+                  maxLength="200"
+                />
+                <small className="char-count">{userData.bio?.length || 0}/200</small>
+              </div>
+
+              
+            </div>
+
+            <div className="form-actions">
+              <button type="submit" className="save-button">
+                <FaSave /> Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
-    <Footer />
+      <Footer />
     </div>
   );
 }
