@@ -9,43 +9,44 @@ const BASE_URL = "https://api.spoonacular.com/recipes";
  * @returns {string}
  */
 const normalizeImageUrl = (url) => {
-  if (!url) return 'https://spoonacular.com/recipeImages/default.jpg'; // или замени със снимка по подразбиране
-  return url.startsWith('http') ? url : `https://spoonacular.com/recipeImages/${url}`;
+  if (!url) return "https://spoonacular.com/recipeImages/default.jpg"; // или замени със снимка по подразбиране
+  return url.startsWith("http")
+    ? url
+    : `https://spoonacular.com/recipeImages/${url}`;
 };
 
 /**
- * 
- * @param {Array} ingredients 
- * @returns {Array} 
+ *
+ * @param {Array} ingredients
+ * @returns {Array}
  */
 const normalizeIngredients = (ingredients) => {
   if (!ingredients || !Array.isArray(ingredients)) {
-    return ['Няма съставки посочени'];
+    return ["Няма съставки посочени"];
   }
-  
-  return ingredients.map(ing => {
+
+  return ingredients.map((ing) => {
     if (ing.original) return ing.original;
     if (ing.name && ing.amount) {
-      return `${ing.amount} ${ing.unit || ''} ${ing.name}`.trim();
+      return `${ing.amount} ${ing.unit || ""} ${ing.name}`.trim();
     }
     return JSON.stringify(ing);
   });
 };
 
 /**
- * 
- * @param {string} instructions 
- * @returns {string} 
+ *
+ * @param {string} instructions
+ * @returns {string}
  */
 const cleanInstructions = (instructions) => {
-  if (!instructions) return 'Няма налични инструкции';
-  
+  if (!instructions) return "Няма налични инструкции";
+
   return instructions
-    .replace(/<[^>]*>?/gm, ' ')
-    .replace(/\s+/g, ' ')
+    .replace(/<[^>]*>?/gm, " ")
+    .replace(/\s+/g, " ")
     .trim();
 };
-
 
 export const fetchRecipes = async (
   query = "",
@@ -66,7 +67,7 @@ export const fetchRecipes = async (
         addRecipeInformation: true,
         instructionsRequired: true,
       },
-      timeout: 10000 
+      timeout: 10000,
     });
 
     if (!response?.data?.results) {
@@ -83,7 +84,7 @@ export const fetchRecipes = async (
       servings: recipe.servings || "Не е посочено",
       prepTime: recipe.readyInMinutes || "Не е посочено",
       summary: recipe.summary || "",
-      cuisines: recipe.cuisines || []
+      cuisines: recipe.cuisines || [],
     }));
   } catch (error) {
     console.error("Грешка при зареждане на рецепти:", error);
@@ -99,7 +100,7 @@ export const fetchRecipeDetails = async (id) => {
         includeNutrition: true,
         includeIngredients: true,
       },
-      timeout: 10000 
+      timeout: 10000,
     });
 
     if (!response.data) {
@@ -116,7 +117,9 @@ export const fetchRecipeDetails = async (id) => {
       servings: response.data.servings || "Не е посочено",
       prepTime: response.data.readyInMinutes || "Не е посочено",
       summary: response.data.summary || "",
-      analyzedInstructions: response.data.analyzedInstructions || [{ steps: [] }],
+      analyzedInstructions: response.data.analyzedInstructions || [
+        { steps: [] },
+      ],
       cuisines: response.data.cuisines || [],
       sourceUrl: response.data.sourceUrl || "",
     };

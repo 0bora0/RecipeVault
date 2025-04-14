@@ -120,51 +120,61 @@ export default function Header() {
           </div>
 
           {currentUser ? (
-            <div className="profile-section">
-              <div 
-                className="profile-info"
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
-              >
-                <div className="profile-avatar">
-                  {currentUser.photoURL ? (
-                    <img 
-                      src={currentUser.photoURL} 
-                      alt={currentUser.displayName || 'User'} 
-                      className="avatar-image"
-                    />
-                  ) : (
-                    <span className="avatar-initial">
-                      {currentUser.displayName?.charAt(0) || 'U'}
-                    </span>
-                  )}
+            <div className="auth-section">
+              <div className="profile-section">
+                <div 
+                  className="profile-info"
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                >
+                  <div className="profile-avatar">
+                    {currentUser.photoURL ? (
+                      <img 
+                        src={currentUser.photoURL} 
+                        alt={currentUser.displayName || 'User'} 
+                        className="avatar-image"
+                      />
+                    ) : (
+                      <span className="avatar-initial">
+                        {currentUser.displayName?.charAt(0) || 'U'}
+                      </span>
+                    )}
+                  </div>
+                  <span className="profile-name">
+                    {currentUser.displayName || 'User'}
+                  </span>
                 </div>
-                <span className="profile-name">
-                  {currentUser.displayName || 'User'}
-                </span>
-              </div>
 
-              {showProfileMenu && (
-                <div className="profile-dropdown">
-                  <NavLink
-                    to="/profile-edit"
-                    className="dropdown-item"
-                    onClick={() => {
-                      setShowProfileMenu(false);
-                      closeMobileMenu();
-                    }}
-                  >
-                    <FaUser className="dropdown-icon" />
-                    <span>Edit Profile</span>
-                  </NavLink>
-                  <button 
-                    className="dropdown-item logout-btn"
-                    onClick={handleLogout}
-                  >
-                    <FaSignOutAlt className="dropdown-icon" />
-                    <span>Logout</span>
-                  </button>
-                </div>
-              )}
+                {showProfileMenu && (
+                  <div className="profile-dropdown">
+                    <NavLink
+                      to="/profile-edit"
+                      className="dropdown-item"
+                      onClick={() => {
+                        setShowProfileMenu(false);
+                        closeMobileMenu();
+                      }}
+                    >
+                      <FaUser className="dropdown-icon" />
+                      <span>Edit Profile</span>
+                    </NavLink>
+                    <button 
+                      className="dropdown-item logout-btn"
+                      onClick={handleLogout}
+                    >
+                      <FaSignOutAlt className="dropdown-icon" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+              {/* Mobile-only logout button */}
+              <button 
+                className="mobile-logout-btn"
+                onClick={handleLogout}
+              >
+                <FaSignOutAlt />
+                <span>Logout</span>
+              </button>
             </div>
           ) : (
             <NavLink
