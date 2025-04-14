@@ -123,19 +123,26 @@ function Register() {
 
   return (
     <div className="register-page">
-      <div className="register-container">
-        <div className="register-header">
-          <h2>Create your account</h2>
-          <p>Join our community</p>
+    <div className="register-image">
+      <div className="register-image-content">
+        <h1>Welcome!</h1>
+        <p>Create an account to get started with us today.</p>
+      </div>
+    </div>
+
+    <div className="register-container">
+      <div className="register-header">
+        <h2>Create your account</h2>
+        <p>Join our community</p>
+      </div>
+
+      {error && (
+        <div className="error-message">
+          <i className="bi bi-exclamation-triangle"></i> {error}
         </div>
+      )}
 
-        {error && (
-          <div className="error-message">
-            <i className="bi bi-exclamation-triangle"></i> {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="register-form">
+      <form onSubmit={handleSubmit} className="register-form">
           <div className="form-group">
             <label htmlFor="name">
               <MdDriveFileRenameOutline /> Name*
