@@ -4,13 +4,18 @@ import { db } from "../../services/firebaseConfig";
 import { collection, query, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
-import {  FaClock, FaUtensils, FaFire, FaPencilAlt, FaTrash } from "react-icons/fa";
+import {
+  FaClock,
+  FaUtensils,
+  FaFire,
+  FaPencilAlt,
+  FaTrash,
+} from "react-icons/fa";
 import "../../styles/RecipeCard.css";
 import "./MyRecipes.css";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import { toast } from "react-toastify";
-
 
 function MyRecipes() {
   const navigate = useNavigate();
@@ -44,24 +49,24 @@ function MyRecipes() {
 
   const handleDelete = async (recipeId) => {
     confirmAlert({
-      title: "Потвърждение",
-      message: "Сигурни ли сте, че искате да изтриете тази рецепта?",
+      title: "Confirm Delete",
+      message: "Are you sure you want to delete this recipe?",
       buttons: [
         {
-          label: "Да",
+          label: "Yes",
           onClick: async () => {
             try {
               await deleteDoc(doc(db, "recipes", recipeId));
               setRecipes(recipes.filter((recipe) => recipe.id !== recipeId));
-              toast.success("Рецептата е изтрита успешно!");
+              toast.success("Recipe deleted successfully!");
             } catch (error) {
               console.error("Error deleting recipe:", error);
-              toast.error("Грешка при изтриване на рецепта");
+              toast.error("Error deleting recipe");
             }
           },
         },
         {
-          label: "Не",
+          label: "No",
           onClick: () => {},
         },
       ],
@@ -69,17 +74,17 @@ function MyRecipes() {
   };
 
   const formatTime = (minutes) => {
-    if (!minutes) return 'Не е посочено';
-    return minutes > 60 
-      ? `${Math.floor(minutes / 60)}ч ${minutes % 60}мин` 
-      : `${minutes}мин`;
+    if (!minutes) return "No cooking time specified";
+    return minutes > 60
+      ? `${Math.floor(minutes / 60)}ч ${minutes % 60} min`
+      : `${minutes}min`;
   };
 
   if (loading) {
     return (
       <div className="loading-container">
         <div className="spinner"></div>
-        <p>Зареждане на рецепти...</p>
+        <p>Loading recipes...</p>
       </div>
     );
   }
@@ -90,7 +95,7 @@ function MyRecipes() {
         <div className="error-icon">!</div>
         <p>{error}</p>
         <button onClick={() => window.location.reload()} className="retry-btn">
-          Опитайте отново
+          Try again!
         </button>
       </div>
     );
@@ -103,21 +108,23 @@ function MyRecipes() {
         <div className="container">
           <div className="page-header">
             <h1>
-              <span className="icon-wrapper"><FaUtensils /></span>
-              Моите рецепти
+              <span className="icon-wrapper">
+                <FaUtensils />
+              </span>
+              My recipes
             </h1>
             <Link to="/add-recipe" className="add-recipe-btn">
-              <FaPencilAlt /> Добави нова рецепта
+              <FaPencilAlt /> Add new recipe
             </Link>
           </div>
 
           {recipes.length === 0 ? (
             <div className="empty-state">
               <div className="empty-icon"></div>
-              <h3>Все още нямате добавени рецепти</h3>
-              <p>Започнете, като добавите първата си рецепта</p>
+              <h3>You haven't added any recipes yet.</h3>
+              <p>Click the button below to add your first recipe.</p>
               <Link to="/add-recipe" className="primary-btn">
-                <FaPencilAlt /> Добави рецепта
+                <FaPencilAlt /> Add recipe
               </Link>
             </div>
           ) : (
@@ -127,8 +134,10 @@ function MyRecipes() {
                   <div className="recipe-card">
                     <Link to={`/recipe/${recipe.id}`} className="recipe-link">
                       <div className="recipe-image-container">
-                        <img 
-                          src={recipe.imageBase64 || '/images/placeholder-food.jpg'} 
+                        <img
+                          src={
+                            recipe.imageBase64 || "/images/placeholder-food.jpg"
+                          }
                           alt={recipe.title}
                           loading="lazy"
                           className="recipe-image"
@@ -146,12 +155,14 @@ function MyRecipes() {
                             <FaClock className="meta-icon" />
                             <span>{formatTime(recipe.cookingTime)}</span>
                           </div>
-                          
+
                           <div className="meta-item">
                             <FaUtensils className="meta-icon" />
-                            <span>{recipe.servings || 'Няма посочени'} порции</span>
+                            <span>
+                              {recipe.servings || "No specified"} portions
+                            </span>
                           </div>
-                          
+
                           {recipe.calories && (
                             <div className="meta-item">
                               <FaFire className="meta-icon" />
@@ -162,12 +173,11 @@ function MyRecipes() {
                       </div>
                     </Link>
                     <div className="recipe-actions">
-                   
                       <button
                         onClick={() => handleDelete(recipe.id)}
                         className="action-btn delete"
                       >
-                        <FaTrash /> Изтрий
+                        <FaTrash /> Delete recipe
                       </button>
                     </div>
                   </div>

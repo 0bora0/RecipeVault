@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setSearchQuery, setCategoryFilter, logoutUser } from "../../features/recipes/recipeSlice";
-import { FaHome, FaUtensils, FaHeart, FaUser, FaSearch, FaBars, FaTimes, FaSignOutAlt } from "react-icons/fa";
+import { FaHome, FaUtensils, FaHeart, FaUser, FaSearch, FaBars, FaTimes, FaSignOutAlt, FaEdit } from "react-icons/fa";
 import { GiCookingPot } from "react-icons/gi";
 import "./Header.css";
 
@@ -25,6 +25,7 @@ export default function Header() {
 
   const handleSearch = () => {
     dispatch(setSearchQuery(localSearch));
+    if (mobileMenuOpen) setMobileMenuOpen(false);
   };
 
   const handleCategoryChange = (e) => {
@@ -33,6 +34,11 @@ export default function Header() {
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
+    setShowProfileMenu(false);
+  };
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
   };
 
   const handleLogout = async () => {
@@ -40,6 +46,7 @@ export default function Header() {
       await dispatch(logoutUser()).unwrap();
       navigate('/login');
       setShowProfileMenu(false);
+      setMobileMenuOpen(false);
     } catch (error) {
       console.error("Logout error:", error);
     }
@@ -49,31 +56,35 @@ export default function Header() {
     <header className="app-header">
       <div className="header-container">
         <div className="logo-container">
-          <Link to="/" className="logo-link">
+          <Link to="/" className="logo-link" onClick={closeMobileMenu}>
             <GiCookingPot className="logo-icon" />
             <span className="logo-text">RecipeVault</span>
           </Link>
         </div>
 
-        <button className="mobile-menu-button" onClick={toggleMobileMenu}>
+        <button className="mobile-menu-button" onClick={toggleMobileMenu} aria-label="Toggle menu">
           {mobileMenuOpen ? <FaTimes /> : <FaBars />}
         </button>
 
         <div className={`nav-search-container ${mobileMenuOpen ? "open" : ""}`}>
           <nav className="main-nav">
-            <NavLink to="/" className="nav-link" activeclassname="active" end>
+            <NavLink to="/" className="nav-link" activeclassname="active" end onClick={closeMobileMenu}>
               <FaHome className="nav-icon" />
               <span>Home</span>
             </NavLink>
             {currentUser && (
               <>
-                <NavLink to="/my-recipes" className="nav-link" activeclassname="active">
+                <NavLink to="/my-recipes" className="nav-link" activeclassname="active" onClick={closeMobileMenu}>
                   <FaUtensils className="nav-icon" />
                   <span>My Recipes</span>
                 </NavLink>
-                <NavLink to="/favorites" className="nav-link" activeclassname="active">
+                <NavLink to="/favorites" className="nav-link" activeclassname="active" onClick={closeMobileMenu}>
                   <FaHeart className="nav-icon" />
                   <span>Favorites</span>
+                </NavLink>
+                <NavLink to="/profile-edit" className="nav-link" activeclassname="active" onClick={closeMobileMenu}>
+                  <FaEdit className="nav-icon" />
+                  <span>Edit profile</span>
                 </NavLink>
               </>
             )}
@@ -88,7 +99,7 @@ export default function Header() {
                 onChange={(e) => setLocalSearch(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleSearch()}
               />
-              <button onClick={handleSearch} className="search-button">
+              <button onClick={handleSearch} className="search-button" aria-label="Search">
                 <FaSearch />
               </button>
             </div>
@@ -97,6 +108,7 @@ export default function Header() {
               onChange={handleCategoryChange}
               defaultValue=""
               className="category-select"
+              aria-label="Filter by category"
             >
               <option value="">All Cuisines</option>
               {CATEGORIES.map((category) => (
@@ -136,7 +148,10 @@ export default function Header() {
                   <NavLink
                     to="/profile-edit"
                     className="dropdown-item"
-                    onClick={() => setShowProfileMenu(false)}
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      closeMobileMenu();
+                    }}
                   >
                     <FaUser className="dropdown-icon" />
                     <span>Edit Profile</span>
@@ -156,6 +171,7 @@ export default function Header() {
               to="/login"
               className="nav-link login-link"
               activeclassname="active"
+              onClick={closeMobileMenu}
             >
               <FaUser className="nav-icon" />
               <span>Login</span>

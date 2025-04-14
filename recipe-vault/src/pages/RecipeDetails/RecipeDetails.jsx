@@ -102,7 +102,7 @@ export default function RecipeDetails() {
         animate={{ opacity: 1 }}
       >
         <FaClock className="recipe-error-icon" />
-        <h1 className="recipe-error-title">Грешка при зареждане</h1>
+        <h1 className="recipe-error-title">Error loading recipes.</h1>
         <p className="recipe-error-message">
           {error || "Recipe not found. Please try another recipe."}
         </p>
@@ -110,7 +110,7 @@ export default function RecipeDetails() {
           className="retry-button"
           onClick={() => window.location.reload()}
         >
-          Опитайте отново
+          Try again
         </button>
       </motion.div>
       <Footer />
