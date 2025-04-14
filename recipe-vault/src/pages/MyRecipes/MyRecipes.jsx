@@ -4,7 +4,7 @@ import { db } from "../../services/firebaseConfig";
 import { collection, query, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
-import { FaHeart, FaRegHeart, FaClock, FaUtensils, FaFire, FaPencilAlt, FaTrash } from "react-icons/fa";
+import {  FaClock, FaUtensils, FaFire, FaPencilAlt, FaTrash } from "react-icons/fa";
 import "../../styles/RecipeCard.css";
 import "./MyRecipes.css";
 import Header from "../../components/Header/Header";

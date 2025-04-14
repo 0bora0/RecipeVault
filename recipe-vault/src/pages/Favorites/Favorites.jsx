@@ -12,7 +12,6 @@ export default function Favorites() {
   const favorites = useSelector(state => state.recipes.favorites);
   const dispatch = useDispatch();
 
-  // Анимационни варианти
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {

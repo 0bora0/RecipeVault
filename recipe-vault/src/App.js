@@ -10,7 +10,7 @@ import Login from './pages//Login/Login';
 import Register from './pages/Register/Register'; 
 import ProfileEdit from './pages/ProfileEdit/ProfileEdit';
 import 'react-toastify/dist/ReactToastify.css';
-
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -28,6 +28,7 @@ function App() {
             <Route path="/login" element={<Login />} /> 
             <Route path="/register" element={<Register />} /> 
             <Route path="/profile-edit" element={<ProfileEdit />} />
+            <Route path="*" element={<h1>404 Not Found</h1>} />
           </Routes>
         </div>
       </Router>

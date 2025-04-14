@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { useNavigate, Link } from "react-router-dom";
-import { auth } from '../../services/firebaseConfig';
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from '../../features/recipes/recipeSlice';
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaSignInAlt } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import "./Login.css";
+import { Link } from 'react-router-dom';
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -12,9 +13,9 @@ function Login() {
     password: ""
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { error, authStatus } = useSelector(state => state.recipes);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,30 +27,31 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setError("");
-
-    try {
-      await signInWithEmailAndPassword(auth, formData.email, formData.password);
-      navigate("/");
-    } catch (err) {
-      console.error("Login error:", err);
-      if (err.code === "auth/user-not-found") {
-        setError("A user with this email does not exist.");
-      } else if (err.code === "auth/wrong-password") {
-        setError("Wrong password. Please try again.");
-      } else if (err.code === "auth/too-many-requests") {
-        setError("Too many attempts. Please try again later.");
-      } else {
-        setError("Error signing in. Please try again.");
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
+    dispatch(loginUser(formData))
+      .unwrap()
+      .then(() => {
+        navigate("/");
+      })
+      .catch((error) => {
+        console.error("Login error:", error);
+      });
   };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const getErrorMessage = (errorCode) => {
+    switch(errorCode) {
+      case 'auth/user-not-found':
+        return "A user with this email does not exist.";
+      case 'auth/wrong-password':
+        return "Wrong password. Please try again.";
+      case 'auth/too-many-requests':
+        return "Too many attempts. Please try again later.";
+      default:
+        return "Error signing in. Please try again.";
+    }
   };
 
   return (
@@ -68,7 +70,7 @@ function Login() {
 
         {error && (
           <div className="error-message">
-            <i className="bi bi-exclamation-triangle"></i> {error}
+            {getErrorMessage(error)}
           </div>
         )}
 
@@ -114,7 +116,7 @@ function Login() {
               </button>
             </div>
             <div className="forgot-password">
-              <Link to="/forgot-password">Forgot password?</Link>
+              <Link to="/login">Forgot password?</Link>
             </div>
           </div>
 
@@ -122,9 +124,9 @@ function Login() {
             <button 
               type="submit" 
               className="submit-btn"
-              disabled={isSubmitting}
+              disabled={authStatus === 'loading'}
             >
-              {isSubmitting ? (
+              {authStatus === 'loading' ? (
                 <>
                   <span className="spinner" aria-hidden="true"></span>
                   <span>Login in progress...</span>

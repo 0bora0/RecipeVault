@@ -4,9 +4,9 @@ const API_KEY = "091da16b176443aa83262900242d3450";
 const BASE_URL = "https://api.spoonacular.com/recipes";
 
 /**
- * Нормализира URL адреса на изображението
- * @param {string} image - URL на изображението
- * @returns {string} Нормализиран URL
+ *
+ * @param {string} image
+ * @returns {string}
  */
 const normalizeImageUrl = (url) => {
   if (!url) return 'https://spoonacular.com/recipeImages/default.jpg'; // или замени със снимка по подразбиране
@@ -14,9 +14,9 @@ const normalizeImageUrl = (url) => {
 };
 
 /**
- * Нормализира списъка със съставки
- * @param {Array} ingredients - Масив от съставки
- * @returns {Array} Нормализиран масив
+ * 
+ * @param {Array} ingredients 
+ * @returns {Array} 
  */
 const normalizeIngredients = (ingredients) => {
   if (!ingredients || !Array.isArray(ingredients)) {
@@ -28,28 +28,25 @@ const normalizeIngredients = (ingredients) => {
     if (ing.name && ing.amount) {
       return `${ing.amount} ${ing.unit || ''} ${ing.name}`.trim();
     }
-    return JSON.stringify(ing); // Fallback за неочаквани формати
+    return JSON.stringify(ing);
   });
 };
 
 /**
- * Почиства текстови инструкции от HTML тагове
- * @param {string} instructions - Текст с инструкции
- * @returns {string} Почистен текст
+ * 
+ * @param {string} instructions 
+ * @returns {string} 
  */
 const cleanInstructions = (instructions) => {
   if (!instructions) return 'Няма налични инструкции';
   
-  // Премахва HTML тагове и излишни интервали
   return instructions
     .replace(/<[^>]*>?/gm, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 };
 
-/**
- * Взима списък с рецепти от Spoonacular API
- */
+
 export const fetchRecipes = async (
   query = "",
   cuisine = "",
@@ -69,7 +66,7 @@ export const fetchRecipes = async (
         addRecipeInformation: true,
         instructionsRequired: true,
       },
-      timeout: 10000 // 10 секунди timeout
+      timeout: 10000 
     });
 
     if (!response?.data?.results) {
@@ -94,9 +91,6 @@ export const fetchRecipes = async (
   }
 };
 
-/**
- * Взима детайли за конкретна рецепта от Spoonacular API
- */
 export const fetchRecipeDetails = async (id) => {
   try {
     const response = await axios.get(`${BASE_URL}/${id}/information`, {
@@ -105,7 +99,7 @@ export const fetchRecipeDetails = async (id) => {
         includeNutrition: true,
         includeIngredients: true,
       },
-      timeout: 10000 // 10 секунди timeout
+      timeout: 10000 
     });
 
     if (!response.data) {

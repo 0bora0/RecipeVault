@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchRecipes } from "../../api/spoonacular";
+import { auth } from '../../services/firebaseConfig';
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 
 export const loadRecipes = createAsyncThunk(
   "recipes/loadRecipes",
@@ -12,6 +14,34 @@ export const loadRecipes = createAsyncThunk(
   }
 );
 
+export const loginUser = createAsyncThunk(
+  "recipes/loginUser",
+  async ({ email, password }, { rejectWithValue }) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      return {
+        uid: userCredential.user.uid,
+        email: userCredential.user.email,
+        displayName: userCredential.user.displayName,
+        photoURL: userCredential.user.photoURL
+      };
+    } catch (error) {
+      return rejectWithValue(error.code);
+    }
+  }
+);
+
+export const logoutUser = createAsyncThunk(
+  "recipes/logoutUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const initialState = {
   recipes: [],
   favorites: [],
@@ -19,6 +49,8 @@ const initialState = {
   error: null,
   searchQuery: "",
   selectedCategory: "",
+  currentUser: null,
+  authStatus: 'idle' 
 };
 
 const recipeSlice = createSlice({
@@ -57,7 +89,6 @@ const recipeSlice = createSlice({
         state.favorites.push(action.payload);
       }
     },
-
     addRecipe: (state, action) => {
       state.recipes.unshift({
         ...action.payload,
@@ -79,6 +110,21 @@ const recipeSlice = createSlice({
       .addCase(loadRecipes.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(loginUser.pending, (state) => {
+        state.authStatus = 'loading';
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.authStatus = 'succeeded';
+        state.currentUser = action.payload;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.authStatus = 'failed';
+        state.error = action.payload;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.currentUser = null;
+        state.authStatus = 'idle';
       });
   },
 });
