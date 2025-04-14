@@ -1,312 +1,225 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { fetchRecipeDetails } from "../../api/spoonacular";
-import {
-  FaUtensils,
-  FaListUl,
-  FaBookOpen,
-  FaClock,
-  FaChartPie,
-} from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { db } from "../../services/firebaseConfig";
+import { collection, query, getDocs, doc, deleteDoc } from "firebase/firestore";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
+import { FaClock, FaUtensils, FaFire, FaPencilAlt, FaTrash, FaPlusCircle } from "react-icons/fa";
 import { motion } from "framer-motion";
-import Loader from "../../components/Loader";
-import "../RecipeDetails/RecipeDetails.css";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import { toast } from "react-toastify";
+import "../MyRecipes/MyRecipes.css";
 
-export default function RecipeDetails() {
-  const { id } = useParams();
-  const [recipe, setRecipe] = useState(null);
+function MyRecipes() {
+  const navigate = useNavigate();
+  const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState("ingredients");
-  const fadeIn = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { duration: 0.5 } },
-  };
-
-  const slideUp = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.5 } },
-  };
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const loadRecipe = async () => {
-      setLoading(true);
-      setError(null);
+    const fetchRecipes = async () => {
       try {
-        const data = await fetchRecipeDetails(id);
+        const recipesRef = collection(db, "recipes");
+        const recipesQuery = query(recipesRef);
+        const querySnapshot = await getDocs(recipesQuery);
 
-        if (!data || data.error) {
-          throw new Error(data?.message || "Failed to load recipe");
-        }
+        const recipesData = [];
+        querySnapshot.forEach((doc) => {
+          recipesData.push({ id: doc.id, ...doc.data() });
+        });
 
-        const normalizedRecipe = {
-          id: data.id,
-          title: data.title || "No recipe name",
-          image: data.image,
-          ingredients: Array.isArray(data.ingredients)
-            ? data.ingredients
-            : ["No ingredients available"],
-          instructions: data.instructions || "No instructions available",
-          nutrition: data.nutrition || { nutrients: [] },
-          servings: data.servings || "No listed portions",
-          readyInMinutes: data.readyInMinutes || "No cooking time specified",
-          analyzedInstructions: Array.isArray(data.analyzedInstructions)
-            ? data.analyzedInstructions
-            : [{ steps: [] }],
-          summary: data.summary || "",
-          cuisines: Array.isArray(data.cuisines) ? data.cuisines : [],
-        };
-
-        setRecipe(normalizedRecipe);
-      } catch (err) {
-        console.error("Error loading recipe:", err);
-        setError(err.message);
+        setRecipes(recipesData);
+      } catch (error) {
+        console.error("Error loading recipes:", error);
+        setError("Error loading recipes");
       } finally {
         setLoading(false);
       }
     };
 
-    loadRecipe();
-  }, [id]);
+    fetchRecipes();
+  }, []);
 
-  const formatInstructions = (text) => {
-    if (!text) return null;
-
-    if (text.includes("<ol>") || text.includes("<ul>")) {
-      return (
-        <div
-          className="instructions-html"
-          dangerouslySetInnerHTML={{ __html: text }}
-        />
-      );
-    }
-
-    return text.split("\n").map((step, i) => (
-      <p key={i} className="instruction-text">
-        {step}
-      </p>
-    ));
+  const handleDelete = async (recipeId) => {
+    confirmAlert({
+      title: "Confirm Delete",
+      message: "Are you sure you want to delete this recipe?",
+      buttons: [
+        {
+          label: "Yes",
+          onClick: async () => {
+            try {
+              await deleteDoc(doc(db, "recipes", recipeId));
+              setRecipes(recipes.filter((recipe) => recipe.id !== recipeId));
+              toast.success("Recipe deleted successfully!");
+            } catch (error) {
+              console.error("Error deleting recipe:", error);
+              toast.error("Error deleting recipe");
+            }
+          },
+        },
+        {
+          label: "No",
+          onClick: () => {},
+        },
+      ],
+    });
   };
 
-  if (loading) return <Loader />;
+  const formatTime = (minutes) => {
+    if (!minutes) return "No cooking time specified";
+    return minutes > 60
+      ? `${Math.floor(minutes / 60)}h ${minutes % 60}min`
+      : `${minutes}min`;
+  };
 
-  if (error || !recipe)
+  if (loading) {
     return (
-      <div className="add-recipe-page">
-         <Header />
-      <motion.div
-        className="recipe-error-container"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        <FaClock className="recipe-error-icon" />
-        <h1 className="recipe-error-title">Error loading recipes.</h1>
-        <p className="recipe-error-message">
-          {error || "Recipe not found. Please try another recipe."}
-        </p>
-        <button
-          className="retry-button"
-          onClick={() => window.location.reload()}
-        >
-          Try again
-        </button>
-      </motion.div>
-      <Footer />
+      <div className="app-container">
+        <Header />
+        <div className="home-page">
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p>Loading recipes...</p>
+          </div>
+        </div>
+        <Footer />
       </div>
     );
+  }
+
+  if (error) {
+    return (
+      <div className="app-container">
+        <Header />
+        <div className="home-page">
+          <div className="error-message">
+            <i className="bi bi-exclamation-triangle"></i> Error: {error}
+            <button onClick={() => window.location.reload()} className="retry-button">
+              Try again
+            </button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
-    <div className="recipe-page">
-         <Header />
-    <motion.div
-      className="recipe-details-container"
-      initial="hidden"
-      animate="visible"
-      variants={fadeIn}
-    >
-      <div className="recipe-content-wrapper">
-        <motion.div className="recipe-header-grid" variants={slideUp}>
-          <motion.div
-            className="recipe-image-wrapper"
-            whileHover={{ scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <img
-              src={recipe.image}
-              alt={recipe.title}
-              className="recipe-image"
-              loading="lazy"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src =
-                  "https://spoonacular.com/recipeImages/default.jpg";
-              }}
-            />
-          </motion.div>
+    <div className="app-container">
+      <Header />
+      <div className="home-page">
+        <Link to="/add-recipe" className="floating-add-btn">
+          <FaPlusCircle />
+        </Link>
 
-          <div className="recipe-info-wrapper">
-            <div className="recipe-info">
-              <motion.h1 className="recipe-title" variants={slideUp}>
-                {recipe.title}
-              </motion.h1>
-
-              <div className="recipe-meta-container">
-                <motion.div
-                  className="recipe-meta-item"
-                  variants={slideUp}
-                  whileHover={{ y: -3, scale: 1.05 }}
-                >
-                  <FaClock className="recipe-meta-icon" />
-                  <span>{recipe.readyInMinutes} minutes</span>
-                </motion.div>
-
-                <motion.div
-                  className="recipe-meta-item"
-                  variants={slideUp}
-                  whileHover={{ y: -3, scale: 1.05 }}
-                >
-                  <FaUtensils className="recipe-meta-icon" />
-                  <span>{recipe.servings} portions</span>
-                </motion.div>
-
-                {recipe.cuisines.length > 0 && (
-                  <motion.div
-                    className="recipe-meta-item"
-                    variants={slideUp}
-                    whileHover={{ y: -3, scale: 1.05 }}
-                  >
-                    <FaUtensils className="recipe-meta-icon" />
-                    <span>{recipe.cuisines.join(", ")}</span>
-                  </motion.div>
-                )}
-              </div>
-
-              {recipe.summary && (
-                <motion.div
-                  className="recipe-summary"
-                  variants={slideUp}
-                  dangerouslySetInnerHTML={{ __html: recipe.summary }}
-                />
-              )}
-            </div>
+        <div className="hero-section">
+          <div className="hero-content">
+            <h1>My Recipes</h1>
+            <p>Manage and organize your culinary creations</p>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div className="recipe-tabs-container" variants={slideUp}>
-          <div className="recipe-tabs">
-            <button
-              className={`recipe-tab ${
-                activeTab === "ingredients" ? "active" : ""
-              }`}
-              onClick={() => setActiveTab("ingredients")}
-            >
-              <FaListUl className="recipe-tab-icon" />
-              <span>Ingredients</span>
-            </button>
-
-            <button
-              className={`recipe-tab ${
-                activeTab === "instructions" ? "active" : ""
-              }`}
-              onClick={() => setActiveTab("instructions")}
-            >
-              <FaBookOpen className="recipe-tab-icon" />
-              <span>Instructions</span>
-            </button>
-
-            {recipe.nutrition && recipe.nutrition.nutrients?.length > 0 && (
-              <button
-                className={`recipe-tab ${
-                  activeTab === "nutrition" ? "active" : ""
-                }`}
-                onClick={() => setActiveTab("nutrition")}
-              >
-                <FaChartPie className="recipe-tab-icon" />
-                <span>Nutritional values</span>
-              </button>
-            )}
+        <div className="main-content">
+          <div className="top-bar">
+            <h2 className="section-title">Your Recipe Collection</h2>
+            <Link to="/add-recipe" className="add-recipe-btn">
+              <FaPencilAlt /> Add new recipe
+            </Link>
           </div>
-        </motion.div>
-        <motion.div className="tab-content-container" variants={slideUp}>
-          {activeTab === "ingredients" && (
-            <div className="ingredients-section">
-              <h2 className="section-title">Recipe ingredients</h2>
-              <div className="ingredients-grid">
-                {recipe.ingredients.map((ingredient, index) => (
-                  <motion.div
-                    key={`ingredient-${index}`}
-                    className="ingredient-card"
-                    whileHover={{ y: -5, scale: 1.02 }}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.03 }}
-                  >
-                    <div className="ingredient-content">
-                      <div className="ingredient-bullet"></div>
-                      <span className="ingredient-text">{ingredient}</span>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          )}
 
-          {activeTab === "instructions" && (
-            <div className="instructions-section">
-              <h2 className="section-title">Preparation steps</h2>
-              <div className="instructions-container">
-                {recipe.analyzedInstructions[0].steps.length > 0 ? (
-                  recipe.analyzedInstructions[0].steps.map((step, index) => (
-                    <motion.div
-                      key={`step-${index}`}
-                      className="instruction-step"
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.03 }}
-                    >
-                      <span className="step-number">{step.number}.</span>
-                      <p className="step-text">{step.step}</p>
-                    </motion.div>
-                  ))
-                ) : recipe.instructions ? (
-                  formatInstructions(recipe.instructions)
-                ) : (
-                  <p className="no-data-message">Instructions are not available.</p>
-                )}
-              </div>
-            </div>
-          )}
-
-          {activeTab === "nutrition" && recipe.nutrition && (
-            <div className="nutrition-section">
-              <h2 className="section-title">Nutritional values</h2>
-              <div className="nutrition-facts-wrapper">
-                {recipe.nutrition.nutrients.map((nutrient, index) => (
-                  <div
-                    key={`nutrient-${index}`}
-                    className="nutrition-fact-card"
-                  >
-                    <div className="nutrition-fact-content">
-                      <div className="nutrition-bullet"></div>
-                      <div className="nutrition-text">
-                        <span className="nutrition-name">{nutrient.name}</span>
-                        <span className="nutrition-value">
-                          {Math.round(nutrient.amount)}
-                          {nutrient.unit}
-                        </span>
+          {recipes.length === 0 ? (
+            <motion.div 
+              className="empty-state"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <img src="/images/empty-recipes.svg" alt="No recipes" />
+              <h3>You haven't added any recipes yet</h3>
+              <p>Start by adding your first recipe to your collection</p>
+              <Link to="/add-recipe" className="add-recipe-btn">
+                <FaPlusCircle /> Add recipe
+              </Link>
+            </motion.div>
+          ) : (
+            <motion.div 
+              className="recipes-grid"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              {recipes.map((recipe) => (
+                <motion.div 
+                  key={recipe.id} 
+                  className="recipe-card-wrapper"
+                  whileHover={{ y: -5 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="recipe-card">
+                    <Link to={`/recipe/${recipe.id}`} className="recipe-link">
+                      <div className="recipe-image-container">
+                        <img
+                          src={recipe.imageBase64 || "/images/placeholder-food.jpg"}
+                          alt={recipe.title}
+                          loading="lazy"
+                          className="recipe-image"
+                        />
+                        {recipe.category && (
+                          <div className="category-badge">
+                            {recipe.category}
+                          </div>
+                        )}
                       </div>
+                      <div className="recipe-content">
+                        <h3 className="recipe-title">{recipe.title}</h3>
+                        <div className="recipe-meta">
+                          <div className="meta-item">
+                            <FaClock className="meta-icon" />
+                            <span>{formatTime(recipe.cookingTime)}</span>
+                          </div>
+
+                          <div className="meta-item">
+                            <FaUtensils className="meta-icon" />
+                            <span>
+                              {recipe.servings || "No specified"} portions
+                            </span>
+                          </div>
+
+                          {recipe.calories && (
+                            <div className="meta-item">
+                              <FaFire className="meta-icon" />
+                              <span>{recipe.calories} kcal</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </Link>
+                    <div className="recipe-actions">
+                      <Link 
+                        to={`/edit-recipe/${recipe.id}`}
+                        className="action-btn edit"
+                      >
+                        <FaPencilAlt /> Edit
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(recipe.id)}
+                        className="action-btn delete"
+                      >
+                        <FaTrash /> Delete
+                      </button>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
+                </motion.div>
+              ))}
+            </motion.div>
           )}
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
-    <Footer />
+      <Footer />
     </div>
-  )
-};
+  );
+}
 
+export default MyRecipes;

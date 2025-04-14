@@ -113,9 +113,6 @@ function MyRecipes() {
               </span>
               My recipes
             </h1>
-            <Link to="/add-recipe" className="add-recipe-btn">
-              <FaPencilAlt /> Add new recipe
-            </Link>
           </div>
 
           {recipes.length === 0 ? (
