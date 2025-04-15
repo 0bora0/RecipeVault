@@ -167,7 +167,6 @@ export default function Header() {
                   </div>
                 )}
               </div>
-              {/* Mobile-only logout button */}
               <button 
                 className="mobile-logout-btn"
                 onClick={handleLogout}
