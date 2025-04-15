@@ -1,4 +1,3 @@
-/* Header.css - Improved Mobile Layout with Better Logout Button */
 .app-header {
   background: linear-gradient(135deg, #ff7b25, #ff5e62);
   color: white;
@@ -223,7 +222,6 @@
   border-radius: 50px;
 }
 
-/* Mobile Logout Button */
 .mobile-logout-btn {
   display: none;
   align-items: center;
@@ -242,7 +240,6 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* Mobile Styles */
 @media (max-width: 768px) {
   .mobile-menu-button {
     display: block;
@@ -328,7 +325,6 @@
     margin-top: 1rem;
   }
   
-  /* Hide desktop profile dropdown on mobile */
   .profile-section .profile-dropdown {
     display: none;
   }
