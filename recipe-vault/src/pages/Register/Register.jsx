@@ -3,9 +3,17 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../../services/firebaseConfig";
 import { useNavigate, Link } from "react-router-dom";
-import { FaUser, FaLock, FaEnvelope, FaImage, FaSignInAlt } from "react-icons/fa";
+import {
+  FaUser,
+  FaLock,
+  FaEnvelope,
+  FaImage,
+  FaSignInAlt,
+  FaUserPlus,
+} from "react-icons/fa";
+
 import { MdDriveFileRenameOutline, MdPassword } from "react-icons/md";
-import "./Register.css";
+import "../Register/Register.css";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -14,7 +22,7 @@ function Register() {
     username: "",
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
   const [profilePicture, setProfilePicture] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
@@ -25,9 +33,9 @@ function Register() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
 
     if (name === "password") {
@@ -77,15 +85,17 @@ function Register() {
     }
 
     if (passwordStrength < 3) {
-      setError("The password is too weak. Use at least 8 characters, including uppercase letters and numbers.");
+      setError(
+        "The password is too weak. Use at least 8 characters, including uppercase letters and numbers."
+      );
       setIsSubmitting(false);
       return;
     }
 
     try {
       const userCredential = await createUserWithEmailAndPassword(
-        auth, 
-        formData.email, 
+        auth,
+        formData.email,
         formData.password
       );
       const user = userCredential.user;
@@ -97,7 +107,7 @@ function Register() {
         email: formData.email,
         profilePicture,
         createdAt: new Date(),
-        lastLogin: new Date()
+        lastLogin: new Date(),
       });
       navigate("/");
     } catch (error) {
@@ -105,7 +115,9 @@ function Register() {
       if (error.code === "auth/email-already-in-use") {
         setError("This email address is already in use.");
       } else if (error.code === "auth/weak-password") {
-        setError("The password is too weak. Use at least 8 characters, including uppercase letters and numbers.");
+        setError(
+          "The password is too weak. Use at least 8 characters, including uppercase letters and numbers."
+        );
       } else if (error.code === "auth/invalid-email") {
         setError("Invalid email address.");
       } else {
@@ -123,26 +135,28 @@ function Register() {
 
   return (
     <div className="register-page">
-    <div className="register-image">
-      <div className="register-image-content">
-        <h1>Welcome!</h1>
-        <p>Create an account to get started with us today.</p>
-      </div>
-    </div>
-
-    <div className="register-container">
-      <div className="register-header">
-        <h2>Create your account</h2>
-        <p>Join our community</p>
-      </div>
-
-      {error && (
-        <div className="error-message">
-          <i className="bi bi-exclamation-triangle"></i> {error}
+      <div className="register-image">
+        <div className="register-image-content">
+          <h1>Welcome!</h1>
+          <p>Create an account to get started with us today.</p>
         </div>
-      )}
+      </div>
 
-      <form onSubmit={handleSubmit} className="register-form">
+      <div className="register-container">
+        <div className="register-header">
+          <h2>
+            <FaUserPlus /> Create your account
+          </h2>
+          <p>Join our community</p>
+        </div>
+
+        {error && (
+          <div className="error-message">
+            <i className="bi bi-exclamation-triangle"></i> {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="register-form">
           <div className="form-group">
             <label htmlFor="name">
               <MdDriveFileRenameOutline /> Name*
@@ -218,17 +232,44 @@ function Register() {
               minLength="6"
             />
             <div className="password-strength">
-              <div 
+              <div
                 className="strength-meter"
                 style={{
                   width: `${(passwordStrength / 5) * 100}%`,
-                  backgroundColor: getPasswordStrengthColor()
+                  backgroundColor: getPasswordStrengthColor(),
                 }}
               ></div>
               <div className="strength-labels">
-                <span style={{ color: passwordStrength >= 1 ? getPasswordStrengthColor() : "#ccc" }}>Weak</span>
-                <span style={{ color: passwordStrength >= 3 ? getPasswordStrengthColor() : "#ccc" }}>Medium</span>
-                <span style={{ color: passwordStrength >= 5 ? getPasswordStrengthColor() : "#ccc" }}>Strong</span>
+                <span
+                  style={{
+                    color:
+                      passwordStrength >= 1
+                        ? getPasswordStrengthColor()
+                        : "#ccc",
+                  }}
+                >
+                  Weak
+                </span>
+                <span
+                  style={{
+                    color:
+                      passwordStrength >= 3
+                        ? getPasswordStrengthColor()
+                        : "#ccc",
+                  }}
+                >
+                  Medium
+                </span>
+                <span
+                  style={{
+                    color:
+                      passwordStrength >= 5
+                        ? getPasswordStrengthColor()
+                        : "#ccc",
+                  }}
+                >
+                  Strong
+                </span>
               </div>
             </div>
           </div>
@@ -261,20 +302,18 @@ function Register() {
                 className="file-input"
               />
               <label htmlFor="profilePicture" className="file-input-label">
-                <i className="bi bi-image"></i> {previewImage ? "Change photo" : "Choose photo"}
+                <i className="bi bi-image"></i>{" "}
+                {previewImage ? "Change photo" : "Choose photo"}
               </label>
               <small className="form-hint">Max size 2 MB</small>
             </div>
-            
+
             {previewImage && (
               <div className="image-preview-container">
                 <div className="image-preview">
-                  <img 
-                    src={previewImage} 
-                    alt="Preview Image" 
-                  />
-                  <button 
-                    type="button" 
+                  <img src={previewImage} alt="Preview Image" />
+                  <button
+                    type="button"
                     onClick={() => {
                       setPreviewImage(null);
                       setProfilePicture(null);
@@ -290,8 +329,8 @@ function Register() {
           </div>
 
           <div className="form-footer">
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="submit-btn"
               disabled={isSubmitting}
             >
