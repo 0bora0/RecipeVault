@@ -1,11 +1,12 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
-const ProtectedRoute = () => {
-  const { currentUser } = useSelector(state => state.recipes);
-  
-  return currentUser ? <Outlet /> : <Navigate to="/login" replace />;
-};
+export default function ProtectedRoute({ children }) {
+  const { currentUser } = useSelector((state) => state.recipes);
 
-export default ProtectedRoute;
+  if (!currentUser) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+}

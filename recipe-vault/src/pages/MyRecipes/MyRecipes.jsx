@@ -9,7 +9,7 @@ import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import { toast } from "react-toastify";
 import Loader from "../../components/Loader";
-import "../MyRecipes/MyRecipes.css";
+import "./MyRecipes.css";
 
 function MyRecipes() {
   const navigate = useNavigate();
@@ -26,7 +26,15 @@ function MyRecipes() {
 
         const recipesData = [];
         querySnapshot.forEach((doc) => {
-          recipesData.push({ id: doc.id, ...doc.data() });
+          recipesData.push({ 
+            id: doc.id, 
+            ...doc.data(),
+            // Добавяме празни стойности за липсващи полета
+            cookingTime: doc.data().cookingTime || 0,
+            servings: doc.data().servings || 0,
+            calories: doc.data().calories || 0,
+            cuisines: doc.data().cuisines || []
+          });
         });
 
         setRecipes(recipesData);
@@ -42,7 +50,7 @@ function MyRecipes() {
   }, []);
 
   const handleRecipeClick = (recipeId) => {
-    navigate(`/recipe/${recipeId}`);
+    navigate(`/my-recipe/${recipeId}`); // Променяме пътя за да се различава от API рецептите
   };
 
   const handleDelete = async (recipeId, e) => {

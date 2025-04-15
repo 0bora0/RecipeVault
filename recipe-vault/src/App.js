@@ -6,30 +6,60 @@ import AddRecipe from './pages/AddRecipe/AddRecipe';
 import RecipeDetails from './pages/RecipeDetails/RecipeDetails';
 import Favorites from './pages/Favorites/Favorites';
 import MyRecipes from './pages/MyRecipes/MyRecipes';
-import Login from './pages//Login/Login';
+import Login from './pages/Login/Login';
 import Register from './pages/Register/Register'; 
 import ProfileEdit from './pages/ProfileEdit/ProfileEdit';
-import 'react-toastify/dist/ReactToastify.css';
 import ProtectedRoute from './components/ProtectedRoute';
 import MyRecipeDetails from './pages/MyRecipeDetails/MyRecipeDetails';
+import MyRecipeCard from './components/MyRecipeCard';
+
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function App() {
   return (
-    
     <Provider store={store}>
       <Router>
-        
         <div className="container">
           <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<Home />} />
-            <Route path="/add-recipe" element={<AddRecipe />} />
-            <Route path="/recipe/:id" element={<RecipeDetails />} />
-            <Route path="/favorites" element={<Favorites />} />
-            <Route path="/my-recipes" element={<MyRecipes />} />
             <Route path="/login" element={<Login />} /> 
             <Route path="/register" element={<Register />} /> 
-            <Route path="/profile-edit" element={<ProfileEdit />} />
-            <Route path="/my-recipe-details" element={<MyRecipeDetails />} />
+            <Route path="/recipe/:id" element={<RecipeDetails />} />
+
+            {/* Protected Routes */}
+            <Route path="/add-recipe" element={
+              <ProtectedRoute>
+                <AddRecipe />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/favorites" element={
+              <ProtectedRoute>
+                <Favorites />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/my-recipes" element={
+              <ProtectedRoute>
+                <MyRecipes />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/profile-edit" element={
+              <ProtectedRoute>
+                <ProfileEdit />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/my-recipe-details" element={
+              <ProtectedRoute>
+                <MyRecipeDetails />
+              </ProtectedRoute>
+            } />
+<Route path="/my-recipe/:id" element={<MyRecipeDetails />} />
+            {/* Fallback Route */}
             <Route path="*" element={<h1>404 Not Found</h1>} />
           </Routes>
         </div>
