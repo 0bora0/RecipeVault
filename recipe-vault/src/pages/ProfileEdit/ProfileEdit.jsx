@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../../services/firebaseConfig';
-import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaSave, FaTimes,FaInfoCircle, FaLock} from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaSave, FaTimes, FaInfoCircle, FaLock } from 'react-icons/fa';
 import { MdDriveFileRenameOutline } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
 import './ProfileEdit.css';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
@@ -17,7 +18,8 @@ export default function ProfileEdit() {
     phone: '',
     address: '',
     bio: '',
-    newPassword: ''
+    newPassword: '',
+    currentPassword: '' 
   });
   const [profileImage, setProfileImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
@@ -42,7 +44,8 @@ export default function ProfileEdit() {
         if (docSnap.exists()) {
           setUserData(prev => ({
             ...prev,
-            ...docSnap.data()
+            ...docSnap.data(),
+            email: user.email 
           }));
           if (docSnap.data().profilePicture) {
             setPreviewImage(docSnap.data().profilePicture);
@@ -97,11 +100,20 @@ export default function ProfileEdit() {
       }
 
       if (userData.newPassword) {
-        await user.updatePassword(userData.newPassword);
-      }
+        if (!userData.currentPassword) {
+          throw new Error('Please enter your current password to change it');
+        }
 
+        const credential = EmailAuthProvider.credential(
+          user.email,
+          userData.currentPassword
+        );
+
+        await reauthenticateWithCredential(user, credential);
+        await updatePassword(user, userData.newPassword);
+      }
       const userRef = doc(db, 'users', user.uid);
-      const { newPassword, ...updatedData } = userData;
+      const { newPassword, currentPassword, ...updatedData } = userData;
 
       await updateDoc(userRef, {
         ...updatedData,
@@ -110,11 +122,11 @@ export default function ProfileEdit() {
       });
 
       setSuccess('Profile updated successfully!');
-      setUserData(prev => ({ ...prev, newPassword: '' }));
+      setUserData(prev => ({ ...prev, newPassword: '', currentPassword: '' }));
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError('Failed to update profile. If changing password, you may need to log in again.');
-      console.error(err);
+      console.error('Update error:', err);
+      setError(err.message || 'Failed to update profile. Please check your current password.');
     }
   };
 
@@ -256,21 +268,44 @@ export default function ProfileEdit() {
                   onChange={handleChange}
                 />
               </div>
+
+              {userData.newPassword && (
+                <div className="form-group">
+                  <label htmlFor="currentPassword">
+                    <FaLock /> Current Password
+                  </label>
+                  <input
+                    type="password"
+                    id="currentPassword"
+                    name="currentPassword"
+                    value={userData.currentPassword}
+                    onChange={handleChange}
+                    placeholder="Enter your current password"
+                    required
+                  />
+                </div>
+              )}
+
               <div className="form-group">
-                <label htmlFor="newPassword"> <FaLock /> New Password</label>
+                <label htmlFor="newPassword"> 
+                  <FaLock /> New Password
+                  <small className="form-hint">(leave empty to keep current)</small>
+                </label>
                 <input
                   type="password"
                   id="newPassword"
                   name="newPassword"
                   value={userData.newPassword}
                   onChange={handleChange}
-                  placeholder="Enter new password (optional)"
+                  placeholder="Enter new password"
                   minLength="6"
                 />
               </div>
+
               <div className="form-group full-width">
                 <label htmlFor="bio">
-                  <FaInfoCircle /> Bio</label>
+                  <FaInfoCircle /> Bio
+                </label>
                 <textarea
                   id="bio"
                   name="bio"
@@ -281,8 +316,6 @@ export default function ProfileEdit() {
                 />
                 <small className="char-count">{userData.bio?.length || 0}/200</small>
               </div>
-
-              
             </div>
 
             <div className="form-actions">
