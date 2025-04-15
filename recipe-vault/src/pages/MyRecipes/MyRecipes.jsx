@@ -4,18 +4,12 @@ import { db } from "../../services/firebaseConfig";
 import { collection, query, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
-import {
-  FaClock,
-  FaUtensils,
-  FaFire,
-  FaPencilAlt,
-  FaTrash,
-} from "react-icons/fa";
-import "../../styles/RecipeCard.css";
-import "./MyRecipes.css";
+import { FaPlusCircle, FaClock, FaUtensils, FaFire, FaTrash } from "react-icons/fa";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import { toast } from "react-toastify";
+import Loader from "../../components/Loader";
+import "../MyRecipes/MyRecipes.css";
 
 function MyRecipes() {
   const navigate = useNavigate();
@@ -47,7 +41,13 @@ function MyRecipes() {
     fetchRecipes();
   }, []);
 
-  const handleDelete = async (recipeId) => {
+  const handleRecipeClick = (recipeId) => {
+    navigate(`/recipe/${recipeId}`);
+  };
+
+  const handleDelete = async (recipeId, e) => {
+    e.stopPropagation(); 
+    
     confirmAlert({
       title: "Confirm Delete",
       message: "Are you sure you want to delete this recipe?",
@@ -67,121 +67,109 @@ function MyRecipes() {
         },
         {
           label: "No",
-          onClick: () => {},
         },
       ],
     });
   };
 
   const formatTime = (minutes) => {
-    if (!minutes) return "No cooking time specified";
+    if (!minutes) return "No time specified";
     return minutes > 60
-      ? `${Math.floor(minutes / 60)}ч ${minutes % 60} min`
+      ? `${Math.floor(minutes / 60)}h ${minutes % 60}min`
       : `${minutes}min`;
   };
-
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <p>Loading recipes...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="error-container">
-        <div className="error-icon">!</div>
-        <p>{error}</p>
-        <button onClick={() => window.location.reload()} className="retry-btn">
-          Try again!
-        </button>
-      </div>
-    );
-  }
 
   return (
     <>
       <Header />
-      <div className="my-recipes-page">
-        <div className="container">
-          <div className="page-header">
-            <h1>
-              <span className="icon-wrapper">
-                <FaUtensils />
-              </span>
-              My recipes
-            </h1>
+      <div className="home-page">
+        <Link to="/add-recipe" className="floating-add-btn">
+          <FaPlusCircle />
+        </Link>
+        
+        <div className="hero-section">
+          <div className="hero-content">
+            <h1>My Recipes</h1>
+            <p>Manage and organize your culinary creations</p>
           </div>
+        </div>
 
-          {recipes.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-icon"></div>
-              <h3>You haven't added any recipes yet.</h3>
-              <p>Click the button below to add your first recipe.</p>
-              <Link to="/add-recipe" className="primary-btn">
-                <FaPencilAlt /> Add recipe
-              </Link>
-            </div>
-          ) : (
-            <div className="recipes-grid">
-              {recipes.map((recipe) => (
-                <div key={recipe.id} className="recipe-card-wrapper">
-                  <div className="recipe-card">
-                    <Link to={`/recipe/${recipe.id}`} className="recipe-link">
-                      <div className="recipe-image-container">
-                        <img
-                          src={
-                            recipe.imageBase64 || "/images/placeholder-food.jpg"
-                          }
-                          alt={recipe.title}
-                          loading="lazy"
-                          className="recipe-image"
-                        />
-                        {recipe.category && (
-                          <div className="category-badge">
-                            {recipe.category}
-                          </div>
-                        )}
-                      </div>
-                      <div className="recipe-content">
-                        <h3 className="recipe-title">{recipe.title}</h3>
-                        <div className="recipe-meta">
-                          <div className="meta-item">
-                            <FaClock className="meta-icon" />
-                            <span>{formatTime(recipe.cookingTime)}</span>
-                          </div>
+        <div className="main-content">
+          {loading && <Loader />}
 
-                          <div className="meta-item">
-                            <FaUtensils className="meta-icon" />
-                            <span>
-                              {recipe.servings || "No specified"} portions
-                            </span>
-                          </div>
-
-                          {recipe.calories && (
-                            <div className="meta-item">
-                              <FaFire className="meta-icon" />
-                              <span>{recipe.calories} kcal</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </Link>
-                    <div className="recipe-actions">
-                      <button
-                        onClick={() => handleDelete(recipe.id)}
-                        className="action-btn delete"
-                      >
-                        <FaTrash /> Delete recipe
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
+          {error && (
+            <div className="error-message">
+              <i className="bi bi-exclamation-triangle"></i> Error: {error}
             </div>
           )}
+
+          {!loading && recipes.length === 0 && (
+            <div className="empty-state">
+              <img src="/images/empty-recipes.svg" alt="No recipes" />
+              <h3>You haven't added any recipes yet</h3>
+              <p>Click the button below to add your first recipe</p>
+              <Link to="/add-recipe" className="add-recipe-btn">
+                <FaPlusCircle /> Add your first recipe
+              </Link>
+            </div>
+          )}
+
+          <div className="recipes-grid">
+            {recipes.map((recipe) => (
+              <div 
+                key={recipe.id} 
+                onClick={() => handleRecipeClick(recipe.id)}
+                className="recipe-card-wrapper"
+              >
+                <div className="recipe-card">
+                  <div className="recipe-image-container">
+                    <img
+                      src={recipe.imageBase64 || "/images/placeholder-food.jpg"}
+                      alt={recipe.title}
+                      loading="lazy"
+                      className="recipe-image"
+                    />
+                    {recipe.category && (
+                      <div className="category-badge">
+                        {recipe.category}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="recipe-content">
+                    <h3 className="recipe-title">{recipe.title}</h3>
+                    <div className="recipe-meta">
+                      <div className="meta-item">
+                        <FaClock className="meta-icon" />
+                        <span>{formatTime(recipe.cookingTime)}</span>
+                      </div>
+
+                      <div className="meta-item">
+                        <FaUtensils className="meta-icon" />
+                        <span>
+                          {recipe.servings || "No specified"} portions
+                        </span>
+                      </div>
+
+                      {recipe.calories && (
+                        <div className="meta-item">
+                          <FaFire className="meta-icon" />
+                          <span>{recipe.calories} kcal</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <button
+                    onClick={(e) => handleDelete(recipe.id, e)}
+                    className="delete-btn"
+                  >
+                    <FaTrash /> Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
       <Footer />

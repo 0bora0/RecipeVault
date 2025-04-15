@@ -11,6 +11,7 @@ import Register from './pages/Register/Register';
 import ProfileEdit from './pages/ProfileEdit/ProfileEdit';
 import 'react-toastify/dist/ReactToastify.css';
 import ProtectedRoute from './components/ProtectedRoute';
+import MyRecipeDetails from './pages/MyRecipeDetails/MyRecipeDetails';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <Route path="/login" element={<Login />} /> 
             <Route path="/register" element={<Register />} /> 
             <Route path="/profile-edit" element={<ProfileEdit />} />
+            <Route path="/my-recipe-details" element={<MyRecipeDetails />} />
             <Route path="*" element={<h1>404 Not Found</h1>} />
           </Routes>
         </div>

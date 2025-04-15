@@ -5,12 +5,19 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import "./AddRecipe.css";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
+import { FaClock, FaUtensils, FaFire } from "react-icons/fa";
+
 function AddRecipe() {
   const [formData, setFormData] = useState({
     title: "",
     ingredients: "",
     instructions: "",
     category: "main",
+    servings: "",
+    cookingTime: "",
+    calories: "",
+    summary: "",
+    cuisines: ""
   });
   const [imageBase64, setImageBase64] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,6 +66,7 @@ function AddRecipe() {
     setError("");
 
     try {
+      // Валидация
       if (!formData.title.trim() || formData.title.length < 5) {
         throw new Error("Title must be at least 5 characters long!");
       }
@@ -69,14 +77,44 @@ function AddRecipe() {
       if (ingredientsArray.length < 3) {
         throw new Error("At least 3 ingredients are required!");
       }
+
       if (!formData.instructions.trim() || formData.instructions.length < 50) {
         throw new Error("Instructions must be at least 50 characters long!");
       }
 
+      // Подготвяме структурата на рецептата
       const recipeData = {
+        id: "", // Ще се генерира автоматично от Firestore
         title: formData.title.trim(),
+        image: imageBase64 || null,
         ingredients: ingredientsArray,
         instructions: formData.instructions.trim(),
+        nutrition: {
+          nutrients: [
+            {
+              name: "Calories",
+              amount: parseInt(formData.calories) || 0,
+              unit: "kcal"
+            }
+          ]
+        },
+        servings: formData.servings || "No listed portions",
+        readyInMinutes: formData.cookingTime || "No cooking time specified",
+        analyzedInstructions: [
+          {
+            steps: formData.instructions
+              .split('\n')
+              .filter(step => step.trim())
+              .map((step, index) => ({
+                number: index + 1,
+                step: step.trim()
+              }))
+          }
+        ],
+        summary: formData.summary || "",
+        cuisines: formData.cuisines 
+          ? formData.cuisines.split(',').map(c => c.trim()).filter(c => c)
+          : [],
         category: formData.category,
         createdAt: serverTimestamp(),
         likes: 0,
@@ -86,9 +124,8 @@ function AddRecipe() {
           authorName: auth.currentUser.displayName || "Anonymous",
         }),
       };
-      if (imageBase64) {
-        recipeData.imageBase64 = imageBase64;
-      }
+
+      // Добавяне на рецептата във Firestore
       const docRef = await addDoc(collection(db, "recipes"), recipeData);
       navigate(`/recipe/${docRef.id}`);
     } catch (err) {
@@ -128,6 +165,18 @@ function AddRecipe() {
           </div>
 
           <div className="form-group">
+            <label htmlFor="summary">Short Summary</label>
+            <textarea
+              id="summary"
+              name="summary"
+              value={formData.summary}
+              onChange={handleChange}
+              placeholder="Brief description of the recipe"
+              rows="3"
+            />
+          </div>
+
+          <div className="form-group">
             <label htmlFor="ingredients">Ingredients*</label>
             <textarea
               id="ingredients"
@@ -148,7 +197,7 @@ function AddRecipe() {
               name="instructions"
               value={formData.instructions}
               onChange={handleChange}
-              placeholder="Enter the instructions here."
+              placeholder="Enter each step on a new line."
               required
               minLength="50"
               rows="8"
@@ -156,21 +205,83 @@ function AddRecipe() {
             <small className="form-hint">Min. 50 characters</small>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="category">Category*</label>
-            <select
-              id="category"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              required
-            >
-              <option value="main">Main dish</option>
-              <option value="soup">Soup</option>
-              <option value="salad">Salad</option>
-              <option value="dessert">Dessert</option>
-              <option value="other">Other</option>
-            </select>
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="cookingTime">
+                <FaClock /> Cooking Time (minutes)
+              </label>
+              <input
+                type="number"
+                id="cookingTime"
+                name="cookingTime"
+                value={formData.cookingTime}
+                onChange={handleChange}
+                placeholder="e.g. 45"
+                min="1"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="servings">
+                <FaUtensils /> Servings
+              </label>
+              <input
+                type="number"
+                id="servings"
+                name="servings"
+                value={formData.servings}
+                onChange={handleChange}
+                placeholder="e.g. 4"
+                min="1"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="calories">
+                <FaFire /> Calories (per serving)
+              </label>
+              <input
+                type="number"
+                id="calories"
+                name="calories"
+                value={formData.calories}
+                onChange={handleChange}
+                placeholder="e.g. 350"
+                min="1"
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="category">Category*</label>
+              <select
+                id="category"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                required
+              >
+                <option value="main">Main dish</option>
+                <option value="soup">Soup</option>
+                <option value="salad">Salad</option>
+                <option value="dessert">Dessert</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="cuisines">Cuisines</label>
+              <input
+                type="text"
+                id="cuisines"
+                name="cuisines"
+                value={formData.cuisines}
+                onChange={handleChange}
+                placeholder="e.g. Italian, Mediterranean"
+              />
+              <small className="form-hint">Separate with commas</small>
+            </div>
           </div>
 
           <div className="form-group">

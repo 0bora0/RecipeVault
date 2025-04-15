@@ -256,4 +256,24 @@
     justify-content: center;
   }
 }
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
 
+.form-row .form-group {
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+.meta-icon {
+  margin-right: 0.5rem;
+  color: #ff7b25;
+}
