@@ -464,7 +464,7 @@
     grid-template-columns: 1fr;
   }
 }
-/* Add this to Home.css */
+
 .app-container {
   display: flex;
   flex-direction: column;
@@ -473,5 +473,4 @@
 
 .home-page {
   flex: 1;
-  /* Your existing home page styles */
 }

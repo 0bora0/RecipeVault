@@ -35,7 +35,7 @@ export default function SearchAndFilter() {
       </div>
       
       <select onChange={handleCategoryChange} defaultValue="">
-        <option value="">Всички кухни</option>
+        <option value="">All Categories</option>
         {CATEGORIES.map(category => (
           <option key={category} value={category}>
             {category.charAt(0).toUpperCase() + category.slice(1)}

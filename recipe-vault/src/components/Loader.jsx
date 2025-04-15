@@ -4,7 +4,7 @@ export default function Loader() {
   return (
     <div className="loader-container">
       <div className="spinner"></div>
-      <p>Зареждане...</p>
+      <p>Loading...</p>
     </div>
   );
 }

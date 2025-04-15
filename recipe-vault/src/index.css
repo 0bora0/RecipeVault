@@ -1,19 +1,17 @@
-/* index.css или App.css */
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: sans-serif;
+  background-color: #f9f9f9; 
+}
 
-html, body, #root {
-              margin: 0;
-              padding: 0;
-              width: 100%;
-              height: 100%;
-              font-family: sans-serif;
-              background-color: #f9f9f9; /* по избор */
-            }
-            
-            /* Премахване на ограниченията на .container */
-            .container {
-              width: 100%;
-              max-width: 100%;
-              padding: 0;
-              margin: 0;
-            }
-            
+.container {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  margin: 0;
+}

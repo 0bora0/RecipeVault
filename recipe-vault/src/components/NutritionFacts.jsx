@@ -10,7 +10,7 @@ export default function NutritionFacts({ nutrition }) {
     <div className="container mb-4">
       <div className="d-flex align-items-center mb-4">
         <FaChartPie className="text-danger me-2" size={24} />
-        <h2 className="h4 mb-0 text-dark">Хранителни стойности (на 100г)</h2>
+        <h2 className="h4 mb-0 text-dark">Nutritional values (100g)</h2>
       </div>
 
       <div className="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">

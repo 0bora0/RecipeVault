@@ -1,5 +1,3 @@
-/* Register.css - Premium Styling */
-
 :root {
   --primary-color: #ff7b25;
   --primary-dark: #e66a1a;
@@ -359,7 +357,6 @@
   to { transform: rotate(360deg); }
 }
 
-/* Responsive Design */
 @media (max-width: 992px) {
   .register-hero {
     display: none;
