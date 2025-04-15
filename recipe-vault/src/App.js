@@ -11,9 +11,9 @@ import Register from './pages/Register/Register';
 import ProfileEdit from './pages/ProfileEdit/ProfileEdit';
 import ProtectedRoute from './components/ProtectedRoute';
 import MyRecipeDetails from './pages/MyRecipeDetails/MyRecipeDetails';
-
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+<ToastContainer position="bottom-right" />
 function App() {
   return (
     <Provider store={store}>
@@ -25,6 +25,7 @@ function App() {
             <Route path="/login" element={<Login />} /> 
             <Route path="/register" element={<Register />} /> 
             <Route path="/recipe/:id" element={<RecipeDetails />} />
+            
 
             {/* Protected Routes */}
             <Route path="/add-recipe" element={

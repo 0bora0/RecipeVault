@@ -1,6 +1,5 @@
 .favorites-page {
   min-height: calc(100vh - 120px);
-  background: linear-gradient(to bottom, #fff9f9 0%, #ffffff 100%);
   padding-bottom: 3rem;
 }
 
@@ -8,7 +7,7 @@
   position: relative;
   padding: 3rem 0;
   text-align: center;
-  color: white;
+  color: rgb(129, 72, 72);
   margin-bottom: 2rem;
   overflow: hidden;
 }

@@ -117,7 +117,7 @@ export default function Header() {
               <>
                 <NavLink to="/my-recipes" className="nav-link" activeclassname="active" onClick={closeMobileMenu}>
                   <FaUtensils className="nav-icon" />
-                  <span>My Recipes</span>
+                  <span>User's Recipes</span>
                 </NavLink>
                 <NavLink to="/favorites" className="nav-link" activeclassname="active" onClick={closeMobileMenu}>
                   <FaHeart className="nav-icon" />
@@ -176,9 +176,9 @@ export default function Header() {
                     aria-expanded={showProfileMenu}
                   >
                     <div className="profile-avatar">
-                      {userData?.photoURL ? (
+                      {userData?.profilePicture ? (
                         <img 
-                          src={userData.photoURL} 
+                          src={userData.profilePicture} 
                           alt={userData.displayName || 'User'} 
                           className="avatar-image"
                           onError={(e) => {

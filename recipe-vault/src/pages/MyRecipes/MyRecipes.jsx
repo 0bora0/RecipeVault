@@ -4,7 +4,7 @@ import { db } from "../../services/firebaseConfig";
 import { collection, query, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
-import { FaPlusCircle } from "react-icons/fa";
+import { FaPlusCircle, FaFilter, FaUser, FaTimes } from "react-icons/fa";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import { toast } from "react-toastify";
@@ -15,40 +15,69 @@ import "./MyRecipes.css";
 function MyRecipes() {
   const navigate = useNavigate();
   const [recipes, setRecipes] = useState([]);
+  const [filteredRecipes, setFilteredRecipes] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [filterOpen, setFilterOpen] = useState(false);
 
   useEffect(() => {
-    
-    const fetchRecipes = async () => {
+    const fetchData = async () => {
       try {
         const recipesRef = collection(db, "recipes");
         const recipesQuery = query(recipesRef);
-        const querySnapshot = await getDocs(recipesQuery);
+        const recipesSnapshot = await getDocs(recipesQuery);
 
         const recipesData = [];
-        querySnapshot.forEach((doc) => {
-          recipesData.push({
+        const usersMap = new Map();
+        
+        recipesSnapshot.forEach((doc) => {
+          const recipeData = doc.data();
+          const recipe = {
             id: doc.id,
-            ...doc.data(),
-            cookingTime: doc.data().cookingTime || 0,
-            servings: doc.data().servings || 0,
-            calories: doc.data().calories || 0,
-            cuisines: doc.data().cuisines || [],
-          });
+            ...recipeData,
+            cookingTime: recipeData.cookingTime || 0,
+            servings: recipeData.servings || 0,
+            calories: recipeData.calories || 0,
+            cuisines: recipeData.cuisines || [],
+          };
+          
+          recipesData.push(recipe);
+          
+          if (recipeData.authorId && recipeData.authorName) {
+            if (!usersMap.has(recipeData.authorId)) {
+              usersMap.set(recipeData.authorId, {
+                id: recipeData.authorId,
+                name: recipeData.authorName,
+                photoURL: recipeData.authorPhotoURL || null
+              });
+            }
+          }
         });
 
         setRecipes(recipesData);
+        setFilteredRecipes(recipesData);
+        setUsers(Array.from(usersMap.values()));
       } catch (error) {
-        console.error("Error loading recipes:", error);
+        console.error("Error loading data:", error);
         setError("Error loading recipes");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchRecipes();
+    fetchData();
   }, []);
+
+  useEffect(() => {
+    if (selectedUser === "all") {
+      setFilteredRecipes(recipes);
+    } else {
+      const filtered = recipes.filter(recipe => recipe.authorId === selectedUser);
+      setFilteredRecipes(filtered);
+    }
+  }, [selectedUser, recipes]);
 
   const handleDelete = async (recipeId) => {
     confirmAlert({
@@ -59,14 +88,29 @@ function MyRecipes() {
           label: "Yes",
           onClick: async () => {
             try {
+              // 1. Delete from Firestore
               await deleteDoc(doc(db, "recipes", recipeId));
-              setRecipes(prevRecipes => 
-                prevRecipes.filter(recipe => recipe.id !== recipeId)
-              );
-              toast.success("Recipe deleted successfully!");
+              
+              // 2. Update local state
+              setRecipes(prevRecipes => prevRecipes.filter(recipe => recipe.id !== recipeId));
+              setFilteredRecipes(prev => prev.filter(recipe => recipe.id !== recipeId));
+              
+              // 3. Show success message
+              toast.success("Recipe deleted successfully!", {
+                position: "bottom-right",
+                autoClose: 3000,
+              });
+              
+              // 4. Redirect if on recipe detail page
+              if (window.location.pathname.includes(`/my-recipe/${recipeId}`)) {
+                navigate('/my-recipes');
+              }
             } catch (error) {
               console.error("Error deleting recipe:", error);
-              toast.error("Failed to delete recipe");
+              toast.error("Failed to delete recipe", {
+                position: "bottom-right",
+                autoClose: 3000,
+              });
             }
           },
         },
@@ -74,6 +118,9 @@ function MyRecipes() {
           label: "No",
         },
       ],
+      closeOnEscape: true,
+      closeOnClickOutside: true,
+      overlayClassName: "confirm-overlay",
     });
   };
 
@@ -88,38 +135,42 @@ function MyRecipes() {
         <div className="hero-section">
           <div className="hero-content">
             <h1>My Recipes</h1>
-            <p>Manage and organize your culinary creations</p>
+            <p>Manage your culinary creations</p>
           </div>
         </div>
 
         <div className="main-content">
           {loading && <Loader />}
-          {error && (
-            <div className="error-message">
-              <i className="bi bi-exclamation-triangle"></i> Error: {error}
-            </div>
-          )}
+          {error && <div className="error-message">{error}</div>}
 
-          {!loading && recipes.length === 0 && (
-            <div className="empty-state">
-              <img src="/images/empty-recipes.svg" alt="No recipes" />
-              <h3>You haven't added any recipes yet</h3>
-              <p>Click the button below to add your first recipe</p>
-              <Link to="/add-recipe" className="add-recipe-btn">
-                <FaPlusCircle /> Add your first recipe
-              </Link>
-            </div>
-          )}
+          <div className="content-wrapper">
+          
+              
+            
+            
 
-          <div className="recipes-grid">
-            {recipes.map((recipe) => (
-              <MyRecipeCard 
-                key={recipe.id}
-                recipe={recipe}
-                isFavorite={false} // Можете да добавите логика за любими
-                onDelete={handleDelete}
-              />
-            ))}
+            <div className="recipes-content">
+              {!loading && filteredRecipes.length === 0 && (
+                <div className="empty-state">
+                  <img src="../images/food.jpg" alt="No recipes" />
+                  <h3>No recipes found</h3>
+                  <p>Click the button below to add your first recipe</p>
+                  <Link to="/add-recipe" className="add-recipe-btn">
+                    <FaPlusCircle /> Add Recipe
+                  </Link>
+                </div>
+              )}
+
+              <div className="recipes-grid">
+                {filteredRecipes.map((recipe) => (
+                  <MyRecipeCard 
+                    key={recipe.id}
+                    recipe={recipe}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>

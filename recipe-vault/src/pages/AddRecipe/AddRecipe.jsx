@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../../services/firebaseConfig";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { auth, db} from "../../services/firebaseConfig";
+import { collection, addDoc, serverTimestamp, doc, getDoc } from "firebase/firestore";
 import "./AddRecipe.css";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
@@ -121,9 +121,26 @@ function AddRecipe() {
         views: 0,
         ...(auth.currentUser && {
           authorId: auth.currentUser.uid,
-          authorName: auth.currentUser.displayName || "Anonymous",
+          // authorName ще се вземе от Firestore след като го добавим
         }),
       };
+      
+      // Допълнителна стъпка - взимане на името от users колекцията
+      if (auth.currentUser) {
+        try {
+          const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            recipeData.authorName = userData.name; // Взимаме името от users колекцията
+            recipeData.authorPhotoURL = userData.photoURL || null; // И снимка ако има
+          } else {
+            recipeData.authorName = "Anonymous";
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          recipeData.authorName = "Anonymous";
+        }
+      }
 
       // Добавяне на рецептата във Firestore
       const docRef = await addDoc(collection(db, "recipes"), recipeData);
