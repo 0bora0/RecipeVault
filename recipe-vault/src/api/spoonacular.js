@@ -1,5 +1,4 @@
 import axios from "axios";
-
 const API_KEY = "601e72e6c603466d96810cc05c6b88c3";
 const BASE_URL = "https://api.spoonacular.com/recipes";
 
@@ -9,7 +8,7 @@ const BASE_URL = "https://api.spoonacular.com/recipes";
  * @returns {string}
  */
 const normalizeImageUrl = (url) => {
-  if (!url) return "https://spoonacular.com/recipeImages/default.jpg"; // или замени със снимка по подразбиране
+  if (!url) return "https://spoonacular.com/recipeImages/default.jpg"; 
   return url.startsWith("http")
     ? url
     : `https://spoonacular.com/recipeImages/${url}`;
@@ -22,7 +21,7 @@ const normalizeImageUrl = (url) => {
  */
 const normalizeIngredients = (ingredients) => {
   if (!ingredients || !Array.isArray(ingredients)) {
-    return ["Няма съставки посочени"];
+    return ["No ingredients"];
   }
 
   return ingredients.map((ing) => {
@@ -40,7 +39,7 @@ const normalizeIngredients = (ingredients) => {
  * @returns {string}
  */
 const cleanInstructions = (instructions) => {
-  if (!instructions) return "Няма налични инструкции";
+  if (!instructions) return "No instructions";
 
   return instructions
     .replace(/<[^>]*>?/gm, " ")
@@ -71,7 +70,7 @@ export const fetchRecipes = async (
     });
 
     if (!response?.data?.results) {
-      throw new Error("Невалиден отговор от API");
+      throw new Error("No recipes found from API");
     }
 
     return response.data.results.map((recipe) => ({
@@ -80,14 +79,14 @@ export const fetchRecipes = async (
       image: normalizeImageUrl(recipe.image),
       ingredients: normalizeIngredients(recipe.extendedIngredients),
       instructions: cleanInstructions(recipe.instructions),
-      category: recipe.dishTypes?.[0] || "Други",
-      servings: recipe.servings || "Не е посочено",
-      prepTime: recipe.readyInMinutes || "Не е посочено",
+      category: recipe.dishTypes?.[0] || "Others",
+      servings: recipe.servings || "Not specified",
+      prepTime: recipe.readyInMinutes || "Not specified",
       summary: recipe.summary || "",
       cuisines: recipe.cuisines || [],
     }));
   } catch (error) {
-    console.error("Грешка при зареждане на рецепти:", error);
+    console.error("Error fetching recipes:", error);
     return [];
   }
 };
@@ -104,18 +103,18 @@ export const fetchRecipeDetails = async (id) => {
     });
 
     if (!response.data) {
-      throw new Error("Не бяха открити подробности за рецептата");
+      throw new Error("No recipe details found from API");
     }
 
     return {
       id: response.data.id,
-      title: response.data.title || "Рецепта без име",
+      title: response.data.title || "Recipe without name",
       image: normalizeImageUrl(response.data.image),
       ingredients: normalizeIngredients(response.data.extendedIngredients),
       instructions: cleanInstructions(response.data.instructions),
       nutrition: response.data.nutrition || { nutrients: [] },
-      servings: response.data.servings || "Не е посочено",
-      prepTime: response.data.readyInMinutes || "Не е посочено",
+      servings: response.data.servings || "Not specified",
+      prepTime: response.data.readyInMinutes || "Not specified",
       summary: response.data.summary || "",
       analyzedInstructions: response.data.analyzedInstructions || [
         { steps: [] },
@@ -124,10 +123,10 @@ export const fetchRecipeDetails = async (id) => {
       sourceUrl: response.data.sourceUrl || "",
     };
   } catch (error) {
-    console.error("Грешка при зареждане на детайли за рецепта:", error);
+    console.error("Error fetching recipe details:", error);
     return {
       error: true,
-      message: error.response?.data?.message || "Неуспешно извличане на данни",
+      message: error.response?.data?.message || "Error fetching recipe details",
     };
   }
 };
