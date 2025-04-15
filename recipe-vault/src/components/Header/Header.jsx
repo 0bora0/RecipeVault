@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSearchQuery, setCategoryFilter, logoutUser } from "../../features/recipes/recipeSlice";
 import { FaHome, FaUtensils, FaHeart, FaUser, FaSearch, FaBars, FaTimes, FaSignOutAlt, FaEdit } from "react-icons/fa";
 import { GiCookingPot } from "react-icons/gi";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../../services/firebaseConfig";
 import "./Header.css";
 
 const CATEGORIES = [
@@ -21,6 +23,7 @@ export default function Header() {
   const [localSearch, setLocalSearch] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [userData, setUserData] = useState(null);
   const { currentUser } = useSelector(state => state.recipes);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
@@ -35,6 +38,23 @@ export default function Header() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (currentUser?.uid) {
+        try {
+          const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+          if (userDoc.exists()) {
+            setUserData(userDoc.data());
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, [currentUser]);
 
   const handleSearch = () => {
     dispatch(setSearchQuery(localSearch));
@@ -60,6 +80,7 @@ export default function Header() {
       navigate('/login');
       setShowProfileMenu(false);
       setMobileMenuOpen(false);
+      setUserData(null);
     } catch (error) {
       console.error("Logout error:", error);
     }
@@ -155,21 +176,26 @@ export default function Header() {
                     aria-expanded={showProfileMenu}
                   >
                     <div className="profile-avatar">
-                      {currentUser.photoURL ? (
+                      {userData?.photoURL ? (
                         <img 
-                          src={currentUser.photoURL} 
-                          alt={currentUser.displayName || 'User'} 
+                          src={userData.photoURL} 
+                          alt={userData.displayName || 'User'} 
                           className="avatar-image"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = '';
+                            e.target.style.display = 'none';
+                          }}
                         />
                       ) : (
                         <span className="avatar-initial">
-                          {currentUser.displayName?.charAt(0) || 'U'}
+                          {(userData?.name || 'U').charAt(0).toUpperCase()}
                         </span>
                       )}
                     </div>
                     {!isMobile && (
                       <span className="profile-name">
-                        {currentUser.displayName || 'User'}
+                        {userData?.name || 'Loading...'}
                       </span>
                     )}
                   </div>
