@@ -4,11 +4,12 @@ import { db } from "../../services/firebaseConfig";
 import { collection, query, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
-import { FaPlusCircle, FaClock, FaUtensils, FaFire, FaTrash } from "react-icons/fa";
+import { FaPlusCircle } from "react-icons/fa";
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 import { toast } from "react-toastify";
 import Loader from "../../components/Loader";
+import MyRecipeCard from "../../components/MyRecipeCard";
 import "./MyRecipes.css";
 
 function MyRecipes() {
@@ -18,6 +19,7 @@ function MyRecipes() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    
     const fetchRecipes = async () => {
       try {
         const recipesRef = collection(db, "recipes");
@@ -26,14 +28,13 @@ function MyRecipes() {
 
         const recipesData = [];
         querySnapshot.forEach((doc) => {
-          recipesData.push({ 
-            id: doc.id, 
+          recipesData.push({
+            id: doc.id,
             ...doc.data(),
-            // Добавяме празни стойности за липсващи полета
             cookingTime: doc.data().cookingTime || 0,
             servings: doc.data().servings || 0,
             calories: doc.data().calories || 0,
-            cuisines: doc.data().cuisines || []
+            cuisines: doc.data().cuisines || [],
           });
         });
 
@@ -49,13 +50,7 @@ function MyRecipes() {
     fetchRecipes();
   }, []);
 
-  const handleRecipeClick = (recipeId) => {
-    navigate(`/my-recipe/${recipeId}`); // Променяме пътя за да се различава от API рецептите
-  };
-
-  const handleDelete = async (recipeId, e) => {
-    e.stopPropagation(); 
-    
+  const handleDelete = async (recipeId) => {
     confirmAlert({
       title: "Confirm Delete",
       message: "Are you sure you want to delete this recipe?",
@@ -65,11 +60,13 @@ function MyRecipes() {
           onClick: async () => {
             try {
               await deleteDoc(doc(db, "recipes", recipeId));
-              setRecipes(recipes.filter((recipe) => recipe.id !== recipeId));
+              setRecipes(prevRecipes => 
+                prevRecipes.filter(recipe => recipe.id !== recipeId)
+              );
               toast.success("Recipe deleted successfully!");
             } catch (error) {
               console.error("Error deleting recipe:", error);
-              toast.error("Error deleting recipe");
+              toast.error("Failed to delete recipe");
             }
           },
         },
@@ -80,13 +77,6 @@ function MyRecipes() {
     });
   };
 
-  const formatTime = (minutes) => {
-    if (!minutes) return "No time specified";
-    return minutes > 60
-      ? `${Math.floor(minutes / 60)}h ${minutes % 60}min`
-      : `${minutes}min`;
-  };
-
   return (
     <>
       <Header />
@@ -94,7 +84,7 @@ function MyRecipes() {
         <Link to="/add-recipe" className="floating-add-btn">
           <FaPlusCircle />
         </Link>
-        
+
         <div className="hero-section">
           <div className="hero-content">
             <h1>My Recipes</h1>
@@ -104,7 +94,6 @@ function MyRecipes() {
 
         <div className="main-content">
           {loading && <Loader />}
-
           {error && (
             <div className="error-message">
               <i className="bi bi-exclamation-triangle"></i> Error: {error}
@@ -124,58 +113,12 @@ function MyRecipes() {
 
           <div className="recipes-grid">
             {recipes.map((recipe) => (
-              <div 
-                key={recipe.id} 
-                onClick={() => handleRecipeClick(recipe.id)}
-                className="recipe-card-wrapper"
-              >
-                <div className="recipe-card">
-                  <div className="recipe-image-container">
-                    <img
-                      src={recipe.imageBase64 || "/images/placeholder-food.jpg"}
-                      alt={recipe.title}
-                      loading="lazy"
-                      className="recipe-image"
-                    />
-                    {recipe.category && (
-                      <div className="category-badge">
-                        {recipe.category}
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="recipe-content">
-                    <h3 className="recipe-title">{recipe.title}</h3>
-                    <div className="recipe-meta">
-                      <div className="meta-item">
-                        <FaClock className="meta-icon" />
-                        <span>{formatTime(recipe.cookingTime)}</span>
-                      </div>
-
-                      <div className="meta-item">
-                        <FaUtensils className="meta-icon" />
-                        <span>
-                          {recipe.servings || "No specified"} portions
-                        </span>
-                      </div>
-
-                      {recipe.calories && (
-                        <div className="meta-item">
-                          <FaFire className="meta-icon" />
-                          <span>{recipe.calories} kcal</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <button
-                    onClick={(e) => handleDelete(recipe.id, e)}
-                    className="delete-btn"
-                  >
-                    <FaTrash /> Delete
-                  </button>
-                </div>
-              </div>
+              <MyRecipeCard 
+                key={recipe.id}
+                recipe={recipe}
+                isFavorite={false} // Можете да добавите логика за любими
+                onDelete={handleDelete}
+              />
             ))}
           </div>
         </div>

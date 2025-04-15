@@ -1,3 +1,4 @@
+/* Base Styles */
 .app-header {
   background: linear-gradient(135deg, #ff7b25, #ff5e62);
   color: white;
@@ -5,6 +6,7 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  width: 100%;
 }
 
 .header-container {
@@ -14,7 +16,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
+  position: relative;
 }
 
 .logo-container {
@@ -30,7 +32,7 @@
   color: white;
   font-size: 1.6rem;
   font-weight: 700;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
 .logo-link:hover {
@@ -42,6 +44,7 @@
   margin-right: 0.5rem;
 }
 
+/* Mobile Menu Button */
 .mobile-menu-button {
   display: none;
   background: none;
@@ -51,8 +54,14 @@
   cursor: pointer;
   z-index: 1001;
   padding: 0.5rem;
+  transition: transform 0.3s ease;
 }
 
+.mobile-menu-button:hover {
+  transform: scale(1.1);
+}
+
+/* Navigation and Search Container */
 .nav-search-container {
   display: flex;
   align-items: center;
@@ -75,6 +84,7 @@
   padding: 0.5rem 1rem;
   border-radius: 8px;
   transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
 .nav-link:hover, 
@@ -83,14 +93,18 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
-.search-container {
+/* Search and Filter */
+.search-filter-container {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.search-box {
+.search-container {
   position: relative;
+}
+
+.search-box {
   display: flex;
   align-items: center;
 }
@@ -109,6 +123,11 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
+.search-box input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.3);
+}
+
 .search-button {
   position: absolute;
   left: 1rem;
@@ -116,6 +135,13 @@
   border: none;
   color: white;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter-container {
+  position: relative;
 }
 
 .category-select {
@@ -135,6 +161,12 @@
   background-size: 1rem;
 }
 
+.category-select:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Auth Section */
 .auth-section {
   display: flex;
   align-items: center;
@@ -152,6 +184,7 @@
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 50px;
+  transition: background 0.3s ease;
 }
 
 .profile-info:hover {
@@ -175,6 +208,11 @@
   object-fit: cover;
 }
 
+.avatar-initial {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
 .profile-dropdown {
   position: absolute;
   right: 0;
@@ -186,6 +224,12 @@
   min-width: 180px;
   overflow: hidden;
   z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .dropdown-item {
@@ -220,6 +264,11 @@
   padding: 0.6rem 1.2rem;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50px;
+  transition: background 0.3s ease;
+}
+
+.login-link:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .mobile-logout-btn {
@@ -234,15 +283,38 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
+  width: 100%;
+  justify-content: center;
 }
 
 .mobile-logout-btn:hover {
   background: rgba(255, 255, 255, 0.3);
 }
 
+/* Mobile Styles */
+@media (max-width: 1024px) {
+  .search-filter-container {
+    flex-direction: column;
+    width: 100%;
+    gap: 1rem;
+  }
+  
+  .search-box input {
+    width: 100%;
+  }
+  
+  .category-select {
+    width: 100%;
+  }
+}
+
 @media (max-width: 768px) {
+  .header-container {
+    padding: 1rem;
+  }
+  
   .mobile-menu-button {
-    display: block;
+    display: flex;
   }
   
   .nav-search-container {
@@ -254,20 +326,20 @@
     background: linear-gradient(135deg, #ff7b25, #ff5e62);
     flex-direction: column;
     justify-content: flex-start;
-    padding-top: 6rem;
+    padding: 5rem 1rem 2rem;
     align-items: center;
-    gap: 2rem;
+    gap: 2.5rem;
     opacity: 0;
     pointer-events: none;
-    transform: translateX(100%);
+    transform: translateY(-100%);
     transition: transform 0.3s ease, opacity 0.3s ease;
+    overflow-y: auto;
   }
   
   .nav-search-container.open {
     opacity: 1;
     pointer-events: all;
-    transform: translateX(0);
-    overflow-y: auto;
+    transform: translateY(0);
   }
   
   .main-nav {
@@ -278,63 +350,66 @@
   }
   
   .nav-link {
-    width: 80%;
+    width: 100%;
+    max-width: 300px;
     justify-content: center;
-    padding: 0.8rem;
+    padding: 1rem;
+    font-size: 1.1rem;
   }
   
-  .search-container {
-    flex-direction: column;
-    width: 80%;
+  .search-filter-container {
+    width: 100%;
     max-width: 300px;
-    gap: 1rem;
+    gap: 1.5rem;
   }
   
   .search-box {
     width: 100%;
   }
   
-  .search-box input {
-    width: 100%;
-  }
-  
-  .category-select {
-    width: 100%;
-  }
-  
   .auth-section {
     flex-direction: column;
     width: 100%;
-    align-items: center;
+    max-width: 300px;
     gap: 1.5rem;
   }
   
   .profile-section {
-    margin-top: 1rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .profile-info {
+    width: 100%;
+    justify-content: center;
+    padding: 1rem;
+  }
+  
+  .profile-name {
+    display: block;
   }
   
   .profile-dropdown {
-    right: 50%;
-    transform: translateX(50%);
+    position: static;
+    width: 100%;
+    margin-top: 0.5rem;
+    animation: none;
   }
   
   .mobile-logout-btn {
     display: flex;
-    width: 80%;
-    justify-content: center;
-    margin-top: 1rem;
   }
   
-  .profile-section .profile-dropdown {
-    display: none;
+  .login-link {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
   }
 }
 
 @media (max-width: 480px) {
-  .header-container {
-    padding: 0.8rem 1rem;
-  }
-  
   .logo-text {
     font-size: 1.4rem;
   }
@@ -344,18 +419,18 @@
   }
   
   .nav-search-container {
-    padding-top: 5rem;
+    padding: 4rem 1rem 2rem;
   }
   
   .nav-link {
-    width: 90%;
+    max-width: 100%;
   }
   
-  .search-container {
-    width: 90%;
+  .search-filter-container {
+    max-width: 100%;
   }
   
-  .mobile-logout-btn {
-    width: 90%;
+  .auth-section {
+    max-width: 100%;
   }
 }

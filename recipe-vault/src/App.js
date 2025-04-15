@@ -11,10 +11,8 @@ import Register from './pages/Register/Register';
 import ProfileEdit from './pages/ProfileEdit/ProfileEdit';
 import ProtectedRoute from './components/ProtectedRoute';
 import MyRecipeDetails from './pages/MyRecipeDetails/MyRecipeDetails';
-import MyRecipeCard from './components/MyRecipeCard';
 
 import 'react-toastify/dist/ReactToastify.css';
-
 
 function App() {
   return (
@@ -41,6 +39,14 @@ function App() {
               </ProtectedRoute>
             } />
 
+            {/* Първо дефинираме маршрута за детайлите */}
+            <Route path="/my-recipes/:id" element={  
+              <ProtectedRoute>
+                <MyRecipeDetails />
+              </ProtectedRoute>
+            } />
+
+            {/* После дефинираме маршрута за списъка */}
             <Route path="/my-recipes" element={
               <ProtectedRoute>
                 <MyRecipes />
@@ -53,19 +59,13 @@ function App() {
               </ProtectedRoute>
             } />
 
-            <Route path="/my-recipe-details" element={
-              <ProtectedRoute>
-                <MyRecipeDetails />
-              </ProtectedRoute>
-            } />
-<Route path="/my-recipe/:id" element={<MyRecipeDetails />} />
             {/* Fallback Route */}
             <Route path="*" element={<h1>404 Not Found</h1>} />
           </Routes>
         </div>
       </Router>
-    </Provider>
-  );
+    </Provider> 
+  );  
 }
 
 export default App;

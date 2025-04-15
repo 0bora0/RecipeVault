@@ -306,3 +306,8 @@ input:focus {
     padding: 0.9rem;
   }
 }
+
+.login-page {
+  overflow-y: hidden;
+
+}

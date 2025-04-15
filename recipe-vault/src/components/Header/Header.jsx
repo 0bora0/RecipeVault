@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setSearchQuery, setCategoryFilter, logoutUser } from "../../features/recipes/recipeSlice";
@@ -22,6 +22,19 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const { currentUser } = useSelector(state => state.recipes);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth >= 768) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleSearch = () => {
     dispatch(setSearchQuery(localSearch));
@@ -62,9 +75,16 @@ export default function Header() {
           </Link>
         </div>
 
-        <button className="mobile-menu-button" onClick={toggleMobileMenu} aria-label="Toggle menu">
-          {mobileMenuOpen ? <FaTimes /> : <FaBars />}
-        </button>
+        {isMobile && (
+          <button 
+            className="mobile-menu-button" 
+            onClick={toggleMobileMenu} 
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? <FaTimes /> : <FaBars />}
+          </button>
+        )}
 
         <div className={`nav-search-container ${mobileMenuOpen ? "open" : ""}`}>
           <nav className="main-nav">
@@ -90,102 +110,116 @@ export default function Header() {
             )}
           </nav>
 
-          <div className="search-container">
-            <div className="search-box">
-              <input
-                type="text"
-                placeholder="Search recipes..."
-                value={localSearch}
-                onChange={(e) => setLocalSearch(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-              />
-              <button onClick={handleSearch} className="search-button" aria-label="Search">
-                <FaSearch />
-              </button>
+          <div className="search-filter-container">
+            <div className="search-container">
+              <div className="search-box">
+                <input
+                  type="text"
+                  placeholder="Search recipes..."
+                  value={localSearch}
+                  onChange={(e) => setLocalSearch(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+                  aria-label="Search recipes"
+                />
+                <button onClick={handleSearch} className="search-button" aria-label="Search">
+                  <FaSearch />
+                </button>
+              </div>
             </div>
 
-            <select
-              onChange={handleCategoryChange}
-              defaultValue=""
-              className="category-select"
-              aria-label="Filter by category"
-            >
-              <option value="">All Cuisines</option>
-              {CATEGORIES.map((category) => (
-                <option key={category} value={category}>
-                  {category.charAt(0).toUpperCase() + category.slice(1)}
-                </option>
-              ))}
-            </select>
+            <div className="filter-container">
+              <select
+                onChange={handleCategoryChange}
+                defaultValue=""
+                className="category-select"
+                aria-label="Filter by category"
+              >
+                <option value="">All Cuisines</option>
+                {CATEGORIES.map((category) => (
+                  <option key={category} value={category}>
+                    {category.charAt(0).toUpperCase() + category.slice(1)}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          {currentUser ? (
-            <div className="auth-section">
-              <div className="profile-section">
-                <div 
-                  className="profile-info"
-                  onClick={() => setShowProfileMenu(!showProfileMenu)}
-                >
-                  <div className="profile-avatar">
-                    {currentUser.photoURL ? (
-                      <img 
-                        src={currentUser.photoURL} 
-                        alt={currentUser.displayName || 'User'} 
-                        className="avatar-image"
-                      />
-                    ) : (
-                      <span className="avatar-initial">
-                        {currentUser.displayName?.charAt(0) || 'U'}
+          <div className="auth-section">
+            {currentUser ? (
+              <>
+                <div className="profile-section">
+                  <div 
+                    className="profile-info"
+                    onClick={() => setShowProfileMenu(!showProfileMenu)}
+                    aria-haspopup="true"
+                    aria-expanded={showProfileMenu}
+                  >
+                    <div className="profile-avatar">
+                      {currentUser.photoURL ? (
+                        <img 
+                          src={currentUser.photoURL} 
+                          alt={currentUser.displayName || 'User'} 
+                          className="avatar-image"
+                        />
+                      ) : (
+                        <span className="avatar-initial">
+                          {currentUser.displayName?.charAt(0) || 'U'}
+                        </span>
+                      )}
+                    </div>
+                    {!isMobile && (
+                      <span className="profile-name">
+                        {currentUser.displayName || 'User'}
                       </span>
                     )}
                   </div>
-                  <span className="profile-name">
-                    {currentUser.displayName || 'User'}
-                  </span>
-                </div>
 
-                {showProfileMenu && (
-                  <div className="profile-dropdown">
-                    <NavLink
-                      to="/profile-edit"
-                      className="dropdown-item"
-                      onClick={() => {
-                        setShowProfileMenu(false);
-                        closeMobileMenu();
-                      }}
-                    >
-                      <FaUser className="dropdown-icon" />
-                      <span>Edit Profile</span>
-                    </NavLink>
-                    <button 
-                      className="dropdown-item logout-btn"
-                      onClick={handleLogout}
-                    >
-                      <FaSignOutAlt className="dropdown-icon" />
-                      <span>Logout</span>
-                    </button>
-                  </div>
+                  {showProfileMenu && (
+                    <div className="profile-dropdown">
+                      <NavLink
+                        to="/profile-edit"
+                        className="dropdown-item"
+                        onClick={() => {
+                          setShowProfileMenu(false);
+                          closeMobileMenu();
+                        }}
+                      >
+                        <FaUser className="dropdown-icon" />
+                        <span>Edit Profile</span>
+                      </NavLink>
+                      <button 
+                        className="dropdown-item logout-btn"
+                        onClick={handleLogout}
+                      >
+                        <FaSignOutAlt className="dropdown-icon" />
+                        <span>Logout</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+                
+                {isMobile && (
+                  <button 
+                    className="mobile-logout-btn"
+                    onClick={handleLogout}
+                  >
+                    <FaSignOutAlt />
+                    <span>Logout</span>
+                  </button>
                 )}
-              </div>
-              <button 
-                className="mobile-logout-btn"
-                onClick={handleLogout}
+              </>
+            ) : (
+              <NavLink
+                to="/login"
+                className="nav-link login-link"
+                activeclassname="active"
+                onClick={closeMobileMenu}
               >
-                <FaSignOutAlt />
-                <span>Logout</span>
-              </button>
-            </div>
-          ) : (
-            <NavLink
-              to="/login"
-              className="nav-link login-link"
-              activeclassname="active"
-              onClick={closeMobileMenu}
-            >
-              <FaUser className="nav-icon" />
-              <span>Login</span>
-            </NavLink>
-          )}
+                <FaUser className="nav-icon" />
+                <span>Login</span>
+              </NavLink>
+            )}
+          </div>
         </div>
       </div>
     </header>
