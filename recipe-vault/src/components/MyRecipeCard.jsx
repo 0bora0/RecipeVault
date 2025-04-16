@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { addFavorite, removeFavorite } from '../features/recipes/recipeSlice';
 import { FaHeart, FaRegHeart, FaClock, FaUtensils, FaFire, FaTrash } from 'react-icons/fa';
-import { doc, deleteDoc } from 'firebase/firestore';
-import { db } from '../services/firebaseConfig';
 import { confirmAlert } from 'react-confirm-alert';
 import { toast } from 'react-toastify';
 import 'react-confirm-alert/src/react-confirm-alert.css';
@@ -13,10 +11,7 @@ import '../styles/RecipeCard.css';
 export default function RecipeCard({ recipe, isFavorite, onDelete }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
-  // Safely get currentUser from Redux store
-  const currentUser = useSelector(state => {
-    // Try different possible paths to currentUser in your Redux store
+    const currentUser = useSelector(state => {
     return state?.auth?.currentUser || 
            state?.user?.currentUser || 
            state?.recipes?.currentUser || 
@@ -33,7 +28,7 @@ export default function RecipeCard({ recipe, isFavorite, onDelete }) {
     }
   };
 
-  const handleDelete = async (e) => {
+  const handleDelete = (e) => {
     e.preventDefault();
     e.stopPropagation();
     
@@ -43,29 +38,16 @@ export default function RecipeCard({ recipe, isFavorite, onDelete }) {
       buttons: [
         {
           label: 'Yes',
-          onClick: async () => {
-            try {
-              await deleteDoc(doc(db, "recipes", recipe.id));
-              
-              if (onDelete) {
-                onDelete(recipe.id);
-              }
-              
-              toast.success('Recipe deleted successfully!', {
+          onClick: () => {
+            if (!recipe.id) {
+              console.error("Recipe ID is missing");
+              toast.error("Cannot delete recipe - missing ID", {
                 position: "bottom-right",
                 autoClose: 3000,
               });
-              
-              if (window.location.pathname.includes(`/my-recipe/${recipe.id}`)) {
-                navigate('/my-recipes');
-              }
-            } catch (error) {
-              console.error('Error deleting recipe:', error);
-              toast.error('Failed to delete recipe', {
-                position: "bottom-right",
-                autoClose: 3000,
-              });
+              return;
             }
+            onDelete(recipe.id);
           }
         },
         {
@@ -74,7 +56,6 @@ export default function RecipeCard({ recipe, isFavorite, onDelete }) {
       ],
       closeOnEscape: true,
       closeOnClickOutside: true,
-      overlayClassName: "confirm-overlay",
     });
   };
 
@@ -84,8 +65,6 @@ export default function RecipeCard({ recipe, isFavorite, onDelete }) {
       ? `${Math.floor(minutes / 60)}h ${minutes % 60}m` 
       : `${minutes}m`;
   };
-
-  // Safely check if current user is the author
   const showDeleteButton = currentUser?.uid === recipe?.authorId;
 
   return (
@@ -129,7 +108,7 @@ export default function RecipeCard({ recipe, isFavorite, onDelete }) {
             
             <div className="meta-item">
               <FaUtensils className="meta-icon" />
-              <span>{recipe?.servings || 'N/A'} portions</span>
+              <span>{recipe?.servings || 'Not specified'} portions</span>
             </div>
           </div>
           {recipe?.authorName && (

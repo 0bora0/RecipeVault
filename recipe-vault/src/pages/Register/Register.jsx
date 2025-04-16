@@ -337,7 +337,7 @@ function Register() {
               {isSubmitting ? (
                 <>
                   <span className="spinner" aria-hidden="true"></span>
-                  <span>REgistration in progress...</span>
+                  <span>Registration in progress...</span>
                 </>
               ) : (
                 <>

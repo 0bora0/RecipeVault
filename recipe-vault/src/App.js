@@ -1,19 +1,19 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { store } from './app/store';
-import Home from './pages/Home/Home';
-import AddRecipe from './pages/AddRecipe/AddRecipe';
-import RecipeDetails from './pages/RecipeDetails/RecipeDetails';
-import Favorites from './pages/Favorites/Favorites';
-import MyRecipes from './pages/MyRecipes/MyRecipes';
-import Login from './pages/Login/Login';
-import Register from './pages/Register/Register'; 
-import ProfileEdit from './pages/ProfileEdit/ProfileEdit';
-import ProtectedRoute from './components/ProtectedRoute';
-import MyRecipeDetails from './pages/MyRecipeDetails/MyRecipeDetails';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-<ToastContainer position="bottom-right" />
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Provider } from "react-redux";
+import { store } from "./app/store";
+import Home from "./pages/Home/Home";
+import AddRecipe from "./pages/AddRecipe/AddRecipe";
+import RecipeDetails from "./pages/RecipeDetails/RecipeDetails";
+import Favorites from "./pages/Favorites/Favorites";
+import MyRecipes from "./pages/MyRecipes/MyRecipes";
+import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
+import ProfileEdit from "./pages/ProfileEdit/ProfileEdit";
+import ProtectedRoute from "./components/ProtectedRoute";
+import MyRecipeDetails from "./pages/MyRecipeDetails/MyRecipeDetails";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+<ToastContainer position="bottom-right" />;
 function App() {
   return (
     <Provider store={store}>
@@ -22,51 +22,63 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} /> 
-            <Route path="/register" element={<Register />} /> 
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route path="/recipe/:id" element={<RecipeDetails />} />
-            
 
             {/* Protected Routes */}
-            <Route path="/add-recipe" element={
-              <ProtectedRoute>
-                <AddRecipe />
-              </ProtectedRoute>
-            } />
+            <Route
+              path="/add-recipe"
+              element={
+                <ProtectedRoute>
+                  <AddRecipe />
+                </ProtectedRoute>
+              }
+            />
 
-            <Route path="/favorites" element={
-              <ProtectedRoute>
-                <Favorites />
-              </ProtectedRoute>
-            } />
+            <Route
+              path="/favorites"
+              element={
+                <ProtectedRoute>
+                  <Favorites />
+                </ProtectedRoute>
+              }
+            />
 
-            {/* Първо дефинираме маршрута за детайлите */}
-            <Route path="/my-recipes/:id" element={  
-              <ProtectedRoute>
-                <MyRecipeDetails />
-              </ProtectedRoute>
-            } />
+            <Route
+              path="/my-recipe-details/:id"
+              element={
+                <ProtectedRoute>
+                  <MyRecipeDetails />
+                </ProtectedRoute>
+              }
+            />
 
-            {/* После дефинираме маршрута за списъка */}
-            <Route path="/my-recipes" element={
-              <ProtectedRoute>
-                <MyRecipes />
-              </ProtectedRoute>
-            } />
+            <Route
+              path="/my-recipes"
+              element={
+                <ProtectedRoute>
+                  <MyRecipes />
+                </ProtectedRoute>
+              }
+            />
 
-            <Route path="/profile-edit" element={
-              <ProtectedRoute>
-                <ProfileEdit />
-              </ProtectedRoute>
-            } />
+            <Route
+              path="/profile-edit"
+              element={
+                <ProtectedRoute>
+                  <ProfileEdit />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Fallback Route */}
             <Route path="*" element={<h1>404 Not Found</h1>} />
           </Routes>
         </div>
       </Router>
-    </Provider> 
-  );  
+    </Provider>
+  );
 }
 
 export default App;

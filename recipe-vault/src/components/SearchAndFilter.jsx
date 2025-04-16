@@ -24,7 +24,7 @@ export default function SearchAndFilter() {
       <div className="search-box">
         <input
           type="text"
-          placeholder="Търси рецепти..."
+          placeholder="Search recipes..."
           value={localSearch}
           onChange={(e) => setLocalSearch(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && handleSearch()}

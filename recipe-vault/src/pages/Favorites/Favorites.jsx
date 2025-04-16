@@ -99,7 +99,7 @@ export default function Favorites() {
                     onClick={() => dispatch(removeFavorite(recipe.id))}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    title="Премахни от любими"
+                    title="Remove from favorites"
                   >
                     <FaHeart className="filled-heart" />
                     <FaRegHeart className="outline-heart" />

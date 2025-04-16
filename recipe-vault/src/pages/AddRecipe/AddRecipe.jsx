@@ -66,7 +66,7 @@ function AddRecipe() {
     setError("");
 
     try {
-      // Валидация
+
       if (!formData.title.trim() || formData.title.length < 5) {
         throw new Error("Title must be at least 5 characters long!");
       }
@@ -82,7 +82,6 @@ function AddRecipe() {
         throw new Error("Instructions must be at least 50 characters long!");
       }
 
-      // Подготвяме структурата на рецептата
       const recipeData = {
         id: "", // Ще се генерира автоматично от Firestore
         title: formData.title.trim(),
@@ -125,14 +124,13 @@ function AddRecipe() {
         }),
       };
       
-      // Допълнителна стъпка - взимане на името от users колекцията
       if (auth.currentUser) {
         try {
           const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
           if (userDoc.exists()) {
             const userData = userDoc.data();
-            recipeData.authorName = userData.name; // Взимаме името от users колекцията
-            recipeData.authorPhotoURL = userData.photoURL || null; // И снимка ако има
+            recipeData.authorName = userData.name; 
+            recipeData.authorPhotoURL = userData.photoURL || null;
           } else {
             recipeData.authorName = "Anonymous";
           }
@@ -142,9 +140,8 @@ function AddRecipe() {
         }
       }
 
-      // Добавяне на рецептата във Firestore
       const docRef = await addDoc(collection(db, "recipes"), recipeData);
-      navigate(`/recipe/${docRef.id}`);
+      navigate(`/my-recipes`);
     } catch (err) {
       console.error("Error adding recipe:", err);
       setError(err.message || "Failed to add recipe");

@@ -3,7 +3,6 @@ import { fetchRecipes } from "../../api/spoonacular";
 import { auth } from '../../services/firebaseConfig';
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 
-// 🆕 Вземи потребителя от localStorage
 const userFromStorage = localStorage.getItem('currentUser');
 
 export const loadRecipes = createAsyncThunk(
@@ -121,7 +120,6 @@ const recipeSlice = createSlice({
         state.authStatus = 'succeeded';
         state.currentUser = action.payload;
 
-        // 🆕 Запази в localStorage
         localStorage.setItem('currentUser', JSON.stringify(action.payload));
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -132,7 +130,6 @@ const recipeSlice = createSlice({
         state.currentUser = null;
         state.authStatus = 'idle';
 
-        // 🆕 Изтрий от localStorage
         localStorage.removeItem('currentUser');
       });
   },
