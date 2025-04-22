@@ -21,9 +21,5 @@ input {
   caret: auto;
 }
 input:focus {
-  cursor: url('../public/images/pot-food.svg') 16 16, auto;
   caret-color:#ff7b25;
-}
-a:focus, button:hover {
-  cursor: url('../public/images/pot-food.svg') 16 16, auto;
 }
