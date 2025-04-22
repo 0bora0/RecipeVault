@@ -15,7 +15,7 @@ body,
   padding: 0;
   margin: 0;
 }
-input {
+input, textarea {
   caret-color: #ff7b25;
   caret-shape: block;
   caret: auto;
