@@ -17,7 +17,26 @@ export default function RecipeCard({ recipe, isFavorite, onDelete }) {
            state?.recipes?.currentUser || 
            null;
   });
-
+  const handleCardClick = () => {
+    if (!recipe?.id || recipe.id.trim() === '') {
+      console.error('Invalid recipe data:', {
+        id: recipe?.id,
+        title: recipe?.title,
+        authorId: recipe?.authorId
+      });
+      toast.error('Cannot view recipe - invalid ID');
+      return;
+    }
+    
+    // Проверка дали ID съдържа невалидни символи
+    if (!/^[a-zA-Z0-9_-]+$/.test(recipe.id)) {
+      console.error('Invalid ID format:', recipe.id);
+      toast.error('Invalid recipe ID format');
+      return;
+    }
+    
+    navigate(`/my-recipe-details/${recipe.id}`);
+  };
   const handleFavorite = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -68,65 +87,63 @@ export default function RecipeCard({ recipe, isFavorite, onDelete }) {
   const showDeleteButton = currentUser?.uid === recipe?.authorId;
 
   return (
-    <div className="recipe-card">
-      <Link to={`/my-recipe/${recipe.id}`} className="recipe-link">
-        <div className="recipe-image-container">
-          <img 
-            src={recipe?.imageBase64 || recipe?.image || './images/food.jpg'} 
-            alt={recipe?.title || 'Recipe image'}
-            loading="lazy"
-            className="recipe-image"
-            onError={(e) => {
-              e.target.onerror = null; 
-              e.target.src = './images/food.jpg'
-            }}
-          />
-          <button 
-            onClick={handleFavorite}
-            className={`favorite-btn ${isFavorite ? 'active' : ''}`}
-            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-          >
-            {isFavorite ? (
-              <FaHeart className="heart-icon" />
-            ) : (
-              <FaRegHeart className="heart-icon" />
-            )}
-          </button>
-          {recipe?.category && (
-            <div className="category-badge">
-              {recipe.category}
-            </div>
-          )}
+    <div className="recipe-card" onClick={handleCardClick}>
+    <div className="recipe-image-container">
+      <img 
+        src={recipe?.imageBase64 || recipe?.image || './images/food.jpg'} 
+        alt={recipe?.title || 'Recipe image'}
+        loading="lazy"
+        className="recipe-image"
+        onError={(e) => {
+          e.target.onerror = null; 
+          e.target.src = './images/food.jpg'
+        }}
+      />
+      <button 
+        onClick={handleFavorite}
+        className={`favorite-btn ${isFavorite ? 'active' : ''}`}
+        aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+      >
+        {isFavorite ? (
+          <FaHeart className="heart-icon" />
+        ) : (
+          <FaRegHeart className="heart-icon" />
+        )}
+      </button>
+      {recipe?.category && (
+        <div className="category-badge">
+          {recipe.category}
         </div>
-        <div className="recipe-content">
-          <h3 className="recipe-title">{recipe?.title || 'Untitled Recipe'}</h3>
-          <div className="recipe-meta">
-            <div className="meta-item">
-              <FaClock className="meta-icon" />
-              <span>{formatTime(recipe?.cookingTime || recipe?.readyInMinutes)}</span>
-            </div>
-            
-            <div className="meta-item">
-              <FaUtensils className="meta-icon" />
-              <span>{recipe?.servings || 'Not specified'} portions</span>
-            </div>
-          </div>
-          {recipe?.authorName && (
-            <div className="author-info">
-              <span>от {recipe.authorName}</span>
-              {showDeleteButton && (
-                <button 
-                  onClick={handleDelete}
-                  className="delete-btn"
-                  aria-label="Delete recipe"
-                >
-                  <FaTrash className="delete-icon" />
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-      </Link>
+      )}
     </div>
-  );
+    <div className="recipe-content">
+      <h3 className="recipe-title">{recipe?.title || 'Untitled Recipe'}</h3>
+      <div className="recipe-meta">
+        <div className="meta-item">
+          <FaClock className="meta-icon" />
+          <span>{formatTime(recipe?.cookingTime || recipe?.readyInMinutes)}</span>
+        </div>
+        
+        <div className="meta-item">
+          <FaUtensils className="meta-icon" />
+          <span>{recipe?.servings || 'Not specified'} portions</span>
+        </div>
+      </div>
+      {recipe?.authorName && (
+        <div className="author-info">
+          <span>от {recipe.authorName}</span>
+          {showDeleteButton && (
+            <button 
+              onClick={handleDelete}
+              className="delete-btn"
+              aria-label="Delete recipe"
+            >
+              <FaTrash className="delete-icon" />
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  </div>
+);
 }

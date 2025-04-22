@@ -23,19 +23,29 @@ function MyRecipes() {
       const recipesRef = collection(db, "recipes");
       const recipesQuery = query(recipesRef);
       const recipesSnapshot = await getDocs(recipesQuery);
-
-      const recipesData = recipesSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        cookingTime: doc.data().cookingTime || 0,
-        servings: doc.data().servings || 0,
-      }));
-
+  
+      const recipesData = recipesSnapshot.docs.map((doc) => {
+        console.log('Document ID:', doc.id); // Логване на ID от Firestore
+        console.log('Document data:', doc.data()); // Логване на данните
+        
+        if (!doc.id) {
+          console.error('Empty document ID for document:', doc);
+        }
+        
+        return {
+          id: doc.id,
+          ...doc.data(),
+          // Добавете временно логване за проверка на authorId
+          authorId: doc.data().authorId || 'missing_author_id'
+        };
+      });
+  
+      console.log('Processed recipes data:', recipesData);
       setRecipes(recipesData);
+      setLoading(false);
     } catch (error) {
       console.error("Error loading data:", error);
       setError("Error loading recipes");
-    } finally {
       setLoading(false);
     }
   };
@@ -123,6 +133,7 @@ function MyRecipes() {
 
             <div className="recipes-grid">
               {recipes.map((recipe) => (
+                console.log('Recipe in map:', recipe),
                 <MyRecipeCard
                   key={recipe.id}
                   recipe={recipe}

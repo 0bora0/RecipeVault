@@ -35,6 +35,7 @@ export default function MyRecipeDetails() {
   };
 
   useEffect(() => {
+    console.log('Received recipe ID:', id);
     const loadRecipe = async () => {
       setLoading(true);
       setError(null);
