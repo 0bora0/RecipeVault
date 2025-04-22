@@ -23,3 +23,25 @@ input, textarea {
 input:focus {
   caret-color:#ff7b25;
 }
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f0f0f0; 
+}
+
+::-webkit-scrollbar-thumb {
+  background:linear-gradient(135deg, #ff7b25, #ff5e62);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background:linear-gradient(135deg, #ff7b25, #ff5e62); 
+}
+
+body {
+  scrollbar-width: thin;
+  scrollbar-color:linear-gradient(135deg, #ff7b25, #ff5e62);
+}
