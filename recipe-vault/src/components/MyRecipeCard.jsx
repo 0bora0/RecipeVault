@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { addFavorite, removeFavorite } from '../features/recipes/recipeSlice';
-import { FaHeart, FaRegHeart, FaClock, FaUtensils, FaFire, FaTrash } from 'react-icons/fa';
+import { FaHeart, FaRegHeart, FaClock, FaUtensils, FaTrash } from 'react-icons/fa';
 import { confirmAlert } from 'react-confirm-alert';
 import { toast } from 'react-toastify';
 import 'react-confirm-alert/src/react-confirm-alert.css';
@@ -28,7 +28,6 @@ export default function RecipeCard({ recipe, isFavorite, onDelete }) {
       return;
     }
     
-    // Проверка дали ID съдържа невалидни символи
     if (!/^[a-zA-Z0-9_-]+$/.test(recipe.id)) {
       console.error('Invalid ID format:', recipe.id);
       toast.error('Invalid recipe ID format');
