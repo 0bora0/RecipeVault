@@ -46,9 +46,6 @@ body {
   scrollbar-color:linear-gradient(135deg, #ff7b25, #ff5e62);
 }
 
-svg{
-  color:#ff7b25;
-}
 div.divider{
     color: #ff7b25;
 }
