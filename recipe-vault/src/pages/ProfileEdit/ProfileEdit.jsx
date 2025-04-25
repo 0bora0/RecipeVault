@@ -135,7 +135,6 @@ export default function ProfileEdit() {
     return <Loader />;
   }
   
-
   return (
     <div className="profile-edit-page">
       <Header />
