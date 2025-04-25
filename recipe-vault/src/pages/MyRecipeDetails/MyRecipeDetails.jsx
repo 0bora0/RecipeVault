@@ -48,8 +48,6 @@ export default function MyRecipeDetails() {
         }
 
         const recipeData = docSnap.data();
-
-        // Transform Firestore data to match your component's expectations
         const normalizedRecipe = {
           id: docSnap.id,
           title: recipeData.title || "No recipe name",
