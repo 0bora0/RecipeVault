@@ -42,7 +42,7 @@ export default function Loader({ isLoading }) {
           <img src={loadingGif} alt="Loading" className="loader-gif" />
           <div className="loader-orbital-ring"></div>
         </div>
-        <p className="loader-text">Зареждане...</p>
+        <p className="loader-text">Loading in progress...</p>
         <div className="progress-track">
           <div 
             className="progress-bar" 
