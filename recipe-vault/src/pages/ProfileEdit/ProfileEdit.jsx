@@ -9,6 +9,7 @@ import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 
 import './ProfileEdit.css';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
+import Loader from '../../components/Loader';
 
 export default function ProfileEdit() {
   const [userData, setUserData] = useState({
@@ -131,13 +132,9 @@ export default function ProfileEdit() {
   };
 
   if (isLoading) {
-    return (
-      <div className="profile-edit-loading">
-        <div className="loading-spinner"></div>
-        <p>Loading your profile...</p>
-      </div>
-    );
+    return <Loader />;
   }
+  
 
   return (
     <div className="profile-edit-page">
