@@ -2,45 +2,59 @@ import { useEffect, useState } from 'react';
 import '../styles/Loader.css';
 import loadingGif from '../assets/loading.gif';
 
-export default function Loader({ onDone }) {
-  const [visible, setVisible] = useState(true);
+export default function Loader({ isLoading }) {
+  const [showLoader, setShowLoader] = useState(true);
+  const [minDisplayTimePassed, setMinDisplayTimePassed] = useState(false);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const minVisibleTime = 9000; // 3 секунди
-    const startTime = Date.now();
-    const duration = 5000; // цялата продължителност на прогрес лентата (примерно)
+    // Minimum display time (3 seconds)
+    const minTimer = setTimeout(() => {
+      setMinDisplayTimePassed(true);
+    }, 5000);
 
-    const interval = setInterval(() => {
+    // Progress animation (5 seconds total)
+    const startTime = Date.now();
+    const duration = 5000;
+    
+    const progressInterval = setInterval(() => {
       const elapsed = Date.now() - startTime;
       const newProgress = Math.min((elapsed / duration) * 100, 100);
       setProgress(newProgress);
     }, 16);
 
-    const timer = setTimeout(() => {
-      setVisible(false);
-      if (onDone) onDone(); // ако родителят иска да знае кога е приключил
-    }, minVisibleTime);
-
     return () => {
-      clearInterval(interval);
-      clearTimeout(timer);
+      clearTimeout(minTimer);
+      clearInterval(progressInterval);
     };
   }, []);
 
-  if (!visible) return null;
+  useEffect(() => {
+    // Hide only when both conditions are met:
+    // 1. Minimum 3 seconds have passed
+    // 2. Parent component signals loading is done
+    if (minDisplayTimePassed && !isLoading) {
+      setShowLoader(false);
+    }
+  }, [minDisplayTimePassed, isLoading]);
+
+  if (!showLoader) return null;
 
   return (
     <div className="loader-overlay">
       <div className="loader-content">
         <div className="loader-gif-container">
           <img src={loadingGif} alt="Loading" className="loader-gif" />
-          <div className="loader-border-animation"></div>
+          <div className="loader-orbital-ring"></div>
         </div>
-        <p className="loader-text">Loading in progress...</p>
-        <div className="progress-bar">
-          <div className="progress-fill" style={{ width: `${progress}%` }}></div>
+        <p className="loader-text">Зареждане...</p>
+        <div className="progress-track">
+          <div 
+            className="progress-bar" 
+            style={{ width: `${progress}%` }}
+          />
         </div>
+        <div className="loader-percentage">{Math.round(progress)}%</div>
       </div>
     </div>
   );
