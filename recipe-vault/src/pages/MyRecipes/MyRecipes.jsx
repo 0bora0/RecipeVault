@@ -25,8 +25,8 @@ function MyRecipes() {
       const recipesSnapshot = await getDocs(recipesQuery);
   
       const recipesData = recipesSnapshot.docs.map((doc) => {
-        console.log('Document ID:', doc.id); // Логване на ID от Firestore
-        console.log('Document data:', doc.data()); // Логване на данните
+        console.log('Document ID:', doc.id); 
+        console.log('Document data:', doc.data()); 
         
         if (!doc.id) {
           console.error('Empty document ID for document:', doc);
@@ -35,7 +35,6 @@ function MyRecipes() {
         return {
           id: doc.id,
           ...doc.data(),
-          // Добавете временно логване за проверка на authorId
           authorId: doc.data().authorId || 'missing_author_id'
         };
       });
