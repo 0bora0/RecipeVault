@@ -8,12 +8,10 @@ export default function Loader({ isLoading }) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    // Minimum display time (3 seconds)
     const minTimer = setTimeout(() => {
       setMinDisplayTimePassed(true);
     }, 5000);
 
-    // Progress animation (5 seconds total)
     const startTime = Date.now();
     const duration = 5000;
     
@@ -30,9 +28,6 @@ export default function Loader({ isLoading }) {
   }, []);
 
   useEffect(() => {
-    // Hide only when both conditions are met:
-    // 1. Minimum 3 seconds have passed
-    // 2. Parent component signals loading is done
     if (minDisplayTimePassed && !isLoading) {
       setShowLoader(false);
     }
